@@ -1,6 +1,7 @@
 import React from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -20,26 +21,38 @@ export default function App() {
     <AuthProvider>
       <BrowserRouter>
         <Routes>
-          {/* Auth */}
+          {/* Public Auth Routes */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/verify-email" element={<VerifyEmail />} />
 
-          {/* Employee Routes */}
-          <Route path="/dashboard" element={<Navigate to="/employee/dashboard" replace />} />
-          <Route path="/employee/dashboard" element={<EmployeeDashboard />} />
-          <Route path="/employee/profile" element={<Profile />} />
-          <Route path="/employee/attendance" element={<Attendance />} />
-          <Route path="/employee/leave" element={<Leave />} />
-          <Route path="/employee/payroll" element={<Payroll />} />
-          <Route path="/notifications" element={<Notifications />} />
+          {/* Root Redirect */}
+          <Route path="/" element={<Navigate to="/login" replace />} />
+          <Route path="/dashboard" element={<Navigate to="/login" replace />} />
 
-          {/* Admin Routes */}
-          <Route path="/admin/dashboard" element={<AdminDashboard />} />
-          <Route path="/employees" element={<Employees />} />
-          <Route path="/payroll" element={<Payroll />} />
-          <Route path="/analytics" element={<Analytics />} />
+          {/* Private Employee Routes */}
+          <Route element={<ProtectedRoute allowedRoles={["EMPLOYEE", "ADMIN"]} />}>
+            <Route path="/employee/dashboard" element={<EmployeeDashboard />} />
+            <Route path="/employee/profile" element={<Profile />} />
+            <Route path="/employee/attendance" element={<Attendance />} />
+            <Route path="/employee/leave" element={<Leave />} />
+            <Route path="/employee/payroll" element={<Payroll />} />
+            <Route path="/notifications" element={<Notifications />} />
+          </Route>
 
+          {/* Private Admin Routes */}
+          <Route element={<ProtectedRoute allowedRoles={["ADMIN"]} />}>
+            <Route path="/admin/dashboard" element={<AdminDashboard />} />
+            <Route path="/admin/employees" element={<Employees />} />
+            <Route path="/admin/attendance" element={<Attendance />} />
+            <Route path="/admin/leaves" element={<Leave />} />
+            <Route path="/admin/payroll" element={<Payroll />} />
+            <Route path="/employees" element={<Employees />} />
+            <Route path="/payroll" element={<Payroll />} />
+            <Route path="/analytics" element={<Analytics />} />
+          </Route>
+
+          {/* Fallback Catch-All */}
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </BrowserRouter>

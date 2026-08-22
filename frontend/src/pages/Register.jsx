@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { Mail, Lock, Eye, EyeOff, User, Shield, ArrowRight } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, User, Shield, ArrowRight, AlertCircle } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
+import { authService } from "../services/api";
 
 export default function Register() {
   const [formData, setFormData] = useState({
@@ -10,16 +11,38 @@ export default function Register() {
     role: "Employee"
   });
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    if (errorMsg) setErrorMsg("");
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Redirect to email verification per DayFlow authentication flow
-    navigate("/verify-email");
+    setLoading(true);
+    setErrorMsg("");
+
+    try {
+      await authService.signup({
+        email: formData.email,
+        password: formData.password,
+        role: formData.role.toUpperCase(),
+        employeeId: formData.employeeId
+      });
+
+      // Save email for verification screen
+      sessionStorage.setItem("pending_verify_email", formData.email);
+      navigate("/verify-email");
+    } catch (err) {
+      console.error("Registration error:", err);
+      const message = err.response?.data?.message || "Registration failed. Please check details.";
+      setErrorMsg(message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -36,6 +59,13 @@ export default function Register() {
             <h2>Create an Account</h2>
             <p>Register using your official employee credentials</p>
           </div>
+
+          {errorMsg && (
+            <div className="alert alert-danger" style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "16px", padding: "12px", background: "#fee2e2", color: "#991b1b", borderRadius: "8px", fontSize: "14px" }}>
+              <AlertCircle size={18} />
+              <span>{errorMsg}</span>
+            </div>
+          )}
 
           <form className="auth-form" onSubmit={handleSubmit}>
             <div className="form-group">
@@ -76,6 +106,7 @@ export default function Register() {
                   name="role"
                   value={formData.role}
                   onChange={handleChange}
+                  style={{ height: "52px", paddingLeft: "48px", fontSize: "15px" }}
                 >
                   <option value="Employee">Employee</option>
                   <option value="Admin">Admin / HR Officer</option>
@@ -105,13 +136,19 @@ export default function Register() {
               </div>
             </div>
 
-            <button type="submit" className="btn btn-primary btn-full btn-lg">
-              <span>Register</span>
-              <ArrowRight size={18} />
+            <button type="submit" className="btn btn-primary btn-full btn-lg" disabled={loading}>
+              {loading ? (
+                <span>Registering...</span>
+              ) : (
+                <>
+                  <span>Register</span>
+                  <ArrowRight size={18} />
+                </>
+              )}
             </button>
           </form>
 
-          <div className="auth-footer">
+          <div className="auth-footer" style={{ marginTop: "20px" }}>
             Already have an account? <Link to="/login">Sign In</Link>
           </div>
         </div>

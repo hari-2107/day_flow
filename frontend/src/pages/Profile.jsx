@@ -1,38 +1,81 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
 import { useAuth } from "../context/AuthContext";
-import { User, Mail, Phone, MapPin, Briefcase, DollarSign, Save } from "lucide-react";
+import { profileService } from "../services/api";
+import { User, Mail, Phone, MapPin, Briefcase, DollarSign, Save, CheckCircle, AlertCircle } from "lucide-react";
 
 export default function Profile() {
   const { user, updateUser } = useAuth();
-  
+
   const [formData, setFormData] = useState({
     name: user?.name || "Alex Morgan",
     employeeId: user?.employeeId || "EMP-1042",
     email: user?.email || "alex.morgan@dayflow.io",
-    role: user?.role || "Employee",
-    department: "Engineering",
-    designation: "Frontend Engineer",
+    role: user?.role || "EMPLOYEE",
+    department: user?.department || "Engineering",
+    designation: user?.designation || "Frontend Engineer",
     phone: user?.phone || "+1 (555) 234-5678",
     address: user?.address || "742 Evergreen Terrace, Springfield",
-    salaryTier: "Grade A ($5,200 / mo)"
+    salaryTier: user?.salary || "$5,200 / month"
   });
 
+  const [saving, setSaving] = useState(false);
   const [savedSuccess, setSavedSuccess] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
+
+  useEffect(() => {
+    profileService.getProfile()
+      .then((res) => {
+        if (res.data?.user) {
+          const u = res.data.user;
+          setFormData({
+            name: u.name,
+            employeeId: u.employeeId,
+            email: u.email,
+            role: u.role,
+            department: u.department,
+            designation: u.designation,
+            phone: u.phone,
+            address: u.address,
+            salaryTier: u.salary
+          });
+        }
+      })
+      .catch((err) => {
+        console.warn("Could not sync latest profile:", err);
+      });
+  }, []);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSave = (e) => {
+  const handleSave = async (e) => {
     e.preventDefault();
-    updateUser({ phone: formData.phone, address: formData.address });
-    setSavedSuccess(true);
-    setTimeout(() => setSavedSuccess(false), 3000);
-  };
+    setSaving(true);
+    setErrorMsg("");
+    try {
+      const res = await profileService.updateProfile({
+        phone: formData.phone,
+        address: formData.address
+      });
 
-  const isAdmin = user?.role === "Admin";
+      if (res.data?.user) {
+        updateUser(res.data.user);
+      } else {
+        updateUser({ phone: formData.phone, address: formData.address });
+      }
+
+      setSavedSuccess(true);
+      setTimeout(() => setSavedSuccess(false), 3500);
+    } catch (err) {
+      console.error("Profile update error:", err);
+      setErrorMsg("Failed to save profile changes.");
+    } finally {
+      setSaving(false);
+    }
+  };
 
   return (
     <div className="dashboard-layout">
@@ -42,23 +85,33 @@ export default function Profile() {
 
         <div className="dashboard-content">
           {savedSuccess && (
-            <div className="alert alert-success">
-              Profile details updated successfully!
+            <div className="alert alert-success" style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "16px", padding: "12px", background: "#d1fae5", color: "#065f46", borderRadius: "8px" }}>
+              <CheckCircle size={16} />
+              <span>Profile details updated successfully!</span>
             </div>
           )}
 
-          <div className="profile-header">
-            <div className="profile-avatar">
-              {formData.name.charAt(0)}
+          {errorMsg && (
+            <div className="alert alert-danger" style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "16px", padding: "12px", background: "#fee2e2", color: "#991b1b", borderRadius: "8px" }}>
+              <AlertCircle size={16} />
+              <span>{errorMsg}</span>
+            </div>
+          )}
+
+          <div className="profile-header" style={{ display: "flex", alignItems: "center", gap: "20px", background: "#fff", padding: "24px", borderRadius: "12px", border: "1px solid #e2e8f0", marginBottom: "24px" }}>
+            <div className="profile-avatar" style={{ width: "64px", height: "64px", borderRadius: "50%", background: "#4f46e5", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "28px", fontWeight: "bold" }}>
+              {(formData.name || "A").charAt(0)}
             </div>
             <div className="profile-info">
-              <h2>{formData.name}</h2>
-              <p>{formData.designation} • {formData.department} ({formData.employeeId})</p>
+              <h2 style={{ fontSize: "20px", fontWeight: "bold", margin: 0 }}>{formData.name}</h2>
+              <p style={{ color: "#64748b", margin: "4px 0 0 0", fontSize: "14px" }}>
+                {formData.designation} • {formData.department} ({formData.employeeId})
+              </p>
             </div>
           </div>
 
           <form onSubmit={handleSave}>
-            <div className="content-grid equal">
+            <div className="content-grid equal" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "24px" }}>
               {/* Personal Details */}
               <div className="card">
                 <div className="card-header">
@@ -118,7 +171,7 @@ export default function Profile() {
                 </div>
                 <div className="card-body">
                   <div className="form-group">
-                    <label className="form-label">Department</label>
+                    <label className="form-label">Department (Read-only)</label>
                     <div className="input-wrapper">
                       <Briefcase className="input-icon" size={18} />
                       <input type="text" value={formData.department} disabled style={{ opacity: 0.7 }} />
@@ -126,7 +179,7 @@ export default function Profile() {
                   </div>
 
                   <div className="form-group">
-                    <label className="form-label">Job Role / Designation</label>
+                    <label className="form-label">Job Role / Designation (Read-only)</label>
                     <div className="input-wrapper">
                       <Briefcase className="input-icon" size={18} />
                       <input type="text" value={formData.designation} disabled style={{ opacity: 0.7 }} />
@@ -141,10 +194,10 @@ export default function Profile() {
                     </div>
                   </div>
 
-                  <div style={{ marginTop: "32px" }}>
-                    <button type="submit" className="btn btn-primary btn-full">
+                  <div style={{ marginTop: "28px" }}>
+                    <button type="submit" className="btn btn-primary btn-full" disabled={saving}>
                       <Save size={16} />
-                      <span>Save Changes</span>
+                      <span>{saving ? "Saving Changes..." : "Save Changes"}</span>
                     </button>
                   </div>
                 </div>

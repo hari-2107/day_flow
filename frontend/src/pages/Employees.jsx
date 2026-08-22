@@ -1,114 +1,240 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
 import Modal from "../components/Modal";
-import { Search, UserPlus, Edit3, CheckCircle } from "lucide-react";
+import { Search, Edit3, CheckCircle, AlertCircle, ChevronLeft, ChevronRight } from "lucide-react";
+import { adminService } from "../services/api";
+import { useAuth } from "../context/AuthContext";
 
 export default function Employees() {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [employees, setEmployees] = useState([
-    { id: "EMP-1042", name: "John Doe", email: "john@dayflow.io", role: "Software Engineer", dept: "Engineering", status: "Active", phone: "+1 (555) 123-4567", salary: "$5,200" },
-    { id: "EMP-1043", name: "Sarah Connor", email: "sarah@dayflow.io", role: "UI/UX Designer", dept: "Design", status: "Active", phone: "+1 (555) 987-6543", salary: "$4,800" },
-    { id: "EMP-1044", name: "Mike Ross", email: "mike@dayflow.io", role: "Legal Counsel", dept: "Legal", status: "Active", phone: "+1 (555) 345-6789", salary: "$6,100" },
-    { id: "EMP-1045", name: "Rachel Zane", email: "rachel@dayflow.io", role: "HR Specialist", dept: "Human Resources", status: "Inactive", phone: "+1 (555) 456-7890", salary: "$4,500" }
-  ]);
-
-  const [selectedEmp, setSelectedEmp] = useState(null);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const { user } = useAuth();
+  const [employees, setEmployees] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [errorMsg, setErrorMsg] = useState("");
   const [bannerNotice, setBannerNotice] = useState("");
 
-  const filtered = employees.filter(e => 
-    e.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    e.id.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Search input state with debouncing
+  const [searchInput, setSearchInput] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+
+  // Edit Modal state
+  const [selectedEmp, setSelectedEmp] = useState(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  // Debounce search input
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchInput);
+      setCurrentPage(1); // Reset to page 1 on search
+    }, 300);
+    return () => clearTimeout(handler);
+  }, [searchInput]);
+
+  // Fetch employees from API
+  const fetchEmployees = async () => {
+    setLoading(true);
+    setErrorMsg("");
+    try {
+      const res = await adminService.getEmployees();
+      setEmployees(res.data.employees || []);
+    } catch (err) {
+      console.error("Error fetching employees:", err);
+      setErrorMsg("Failed to load employee directory from server.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchEmployees();
+  }, []);
+
+  // Filtered employees list
+  const filteredEmployees = useMemo(() => {
+    if (!debouncedSearch) return employees;
+    const term = debouncedSearch.toLowerCase();
+    return employees.filter(e =>
+      (e.name || "").toLowerCase().includes(term) ||
+      (e.id || "").toLowerCase().includes(term) ||
+      (e.dept || "").toLowerCase().includes(term) ||
+      (e.email || "").toLowerCase().includes(term)
+    );
+  }, [employees, debouncedSearch]);
+
+  // Paginated records
+  const totalPages = Math.ceil(filteredEmployees.length / itemsPerPage) || 1;
+  const paginatedEmployees = useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage;
+    return filteredEmployees.slice(start, start + itemsPerPage);
+  }, [filteredEmployees, currentPage, itemsPerPage]);
 
   const handleEditClick = (emp) => {
     setSelectedEmp({ ...emp });
     setIsEditModalOpen(true);
   };
 
-  const handleSaveEmployee = (e) => {
+  const handleSaveEmployee = async (e) => {
     e.preventDefault();
-    setEmployees(employees.map(emp => emp.id === selectedEmp.id ? selectedEmp : emp));
-    setIsEditModalOpen(false);
-    setBannerNotice(`Updated profile details for ${selectedEmp.name}`);
-    setTimeout(() => setBannerNotice(""), 3000);
+    if (!selectedEmp) return;
+    setSaving(true);
+    try {
+      const targetId = selectedEmp.dbId || selectedEmp.id;
+      await adminService.updateEmployee(targetId, {
+        name: selectedEmp.name,
+        dept: selectedEmp.dept,
+        role: selectedEmp.role,
+        status: selectedEmp.status,
+        salary: selectedEmp.salary,
+        phone: selectedEmp.phone
+      });
+
+      setBannerNotice(`Updated profile details for ${selectedEmp.name}`);
+      setIsEditModalOpen(false);
+      fetchEmployees();
+      setTimeout(() => setBannerNotice(""), 3000);
+    } catch (err) {
+      console.error("Error updating employee:", err);
+      setErrorMsg("Failed to update employee details.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
     <div className="dashboard-layout">
-      <Sidebar role="Admin" user={{ name: "HR Admin", role: "HR Officer" }} />
+      <Sidebar role="Admin" user={user || { name: "HR Admin", role: "HR Officer" }} />
       <main className="dashboard-main">
         <Navbar title="Employee Directory" subtitle="Manage employee profiles, access, and details" />
 
         <div className="dashboard-content">
           {bannerNotice && (
-            <div className="alert alert-success">
+            <div className="alert alert-success" style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "16px", padding: "12px", background: "#d1fae5", color: "#065f46", borderRadius: "8px" }}>
               <CheckCircle size={16} />
               <span>{bannerNotice}</span>
             </div>
           )}
 
-          <div className="page-header">
-            <div className="search-wrapper">
-              <Search size={18} />
-              <input 
-                type="text" 
-                placeholder="Search by name or Employee ID..." 
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+          {errorMsg && (
+            <div className="alert alert-danger" style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "16px", padding: "12px", background: "#fee2e2", color: "#991b1b", borderRadius: "8px" }}>
+              <AlertCircle size={16} />
+              <span>{errorMsg}</span>
+            </div>
+          )}
+
+          <div className="page-header" style={{ marginBottom: "20px" }}>
+            <div className="search-wrapper" style={{ display: "flex", alignItems: "center", gap: "8px", background: "#fff", padding: "8px 16px", borderRadius: "8px", border: "1px solid #e2e8f0", width: "100%", maxWidth: "420px" }}>
+              <Search size={18} color="#64748b" />
+              <input
+                type="text"
+                placeholder="Search by name, ID, or department..."
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                style={{ border: "none", outline: "none", width: "100%", fontSize: "14px" }}
               />
             </div>
           </div>
 
           <div className="card">
             <div className="card-body" style={{ padding: 0 }}>
-              <div className="table-container">
-                <table className="data-table">
-                  <thead>
-                    <tr>
-                      <th>Employee</th>
-                      <th>Department</th>
-                      <th>Designation</th>
-                      <th>Monthly Salary</th>
-                      <th>Status</th>
-                      <th>Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filtered.map((emp) => (
-                      <tr key={emp.id}>
-                        <td>
-                          <div className="employee-cell">
-                            <div className="employee-avatar">{emp.name.charAt(0)}</div>
-                            <div>
-                              <div className="employee-name">{emp.name}</div>
-                              <div className="employee-email">{emp.id} • {emp.email}</div>
-                            </div>
-                          </div>
-                        </td>
-                        <td>{emp.dept}</td>
-                        <td>{emp.role}</td>
-                        <td>{emp.salary}</td>
-                        <td>
-                          <span className={`status ${emp.status === "Active" ? "status-active" : "status-inactive"}`}>
-                            {emp.status}
-                          </span>
-                        </td>
-                        <td>
-                          <button 
-                            className="btn btn-outline" 
-                            style={{ minHeight: "32px", padding: "0 12px", fontSize: "13px" }}
-                            onClick={() => handleEditClick(emp)}
-                          >
-                            <Edit3 size={14} /> Edit
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+              {loading ? (
+                <div style={{ padding: "40px", textAlign: "center", color: "#64748b" }}>
+                  Loading employee directory...
+                </div>
+              ) : (
+                <>
+                  <div className="table-container">
+                    <table className="data-table">
+                      <thead>
+                        <tr>
+                          <th>Employee</th>
+                          <th>Department</th>
+                          <th>Designation</th>
+                          <th>Monthly Salary</th>
+                          <th>Status</th>
+                          <th>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {paginatedEmployees.length > 0 ? (
+                          paginatedEmployees.map((emp) => (
+                            <tr key={emp.id}>
+                              <td>
+                                <div className="employee-cell" style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                                  <div className="employee-avatar" style={{ width: "36px", height: "36px", borderRadius: "50%", background: "#4f46e5", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: "bold" }}>
+                                    {(emp.name || "E").charAt(0)}
+                                  </div>
+                                  <div>
+                                    <div className="employee-name" style={{ fontWeight: 600, color: "#1e293b" }}>{emp.name}</div>
+                                    <div className="employee-email" style={{ fontSize: "12px", color: "#64748b" }}>{emp.id} • {emp.email}</div>
+                                  </div>
+                                </div>
+                              </td>
+                              <td>{emp.dept}</td>
+                              <td>{emp.role}</td>
+                              <td>{emp.salary}</td>
+                              <td>
+                                <span className={`status ${emp.status === "Active" ? "status-active" : "status-inactive"}`}>
+                                  {emp.status}
+                                </span>
+                              </td>
+                              <td>
+                                <button
+                                  className="btn btn-outline"
+                                  style={{ minHeight: "32px", padding: "4px 12px", fontSize: "13px", display: "flex", alignItems: "center", gap: "4px" }}
+                                  onClick={() => handleEditClick(emp)}
+                                >
+                                  <Edit3 size={14} /> Edit
+                                </button>
+                              </td>
+                            </tr>
+                          ))
+                        ) : (
+                          <tr>
+                            <td colSpan="6" style={{ textAlign: "center", padding: "24px", color: "#64748b" }}>
+                              No matching employees found.
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* Pagination Toolbar */}
+                  {filteredEmployees.length > 0 && (
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px 24px", borderTop: "1px solid #e2e8f0" }}>
+                      <span style={{ fontSize: "14px", color: "#64748b" }}>
+                        Showing {Math.min((currentPage - 1) * itemsPerPage + 1, filteredEmployees.length)} to {Math.min(currentPage * itemsPerPage, filteredEmployees.length)} of {filteredEmployees.length} employees
+                      </span>
+                      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                        <button
+                          className="btn btn-outline"
+                          style={{ padding: "6px 12px", fontSize: "13px" }}
+                          disabled={currentPage === 1}
+                          onClick={() => setCurrentPage(p => p - 1)}
+                        >
+                          <ChevronLeft size={16} /> Prev
+                        </button>
+                        <span style={{ fontSize: "14px", fontWeight: 600 }}>
+                          {currentPage} / {totalPages}
+                        </span>
+                        <button
+                          className="btn btn-outline"
+                          style={{ padding: "6px 12px", fontSize: "13px" }}
+                          disabled={currentPage === totalPages}
+                          onClick={() => setCurrentPage(p => p + 1)}
+                        >
+                          Next <ChevronRight size={16} />
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -166,6 +292,7 @@ export default function Employees() {
                   <select
                     value={selectedEmp.status}
                     onChange={(e) => setSelectedEmp({ ...selectedEmp, status: e.target.value })}
+                    style={{ height: "42px", paddingLeft: "12px" }}
                   >
                     <option value="Active">Active</option>
                     <option value="Inactive">Inactive</option>
@@ -185,12 +312,12 @@ export default function Employees() {
               </div>
             </div>
 
-            <div className="modal-footer" style={{ padding: "16px 0 0 0", marginTop: "16px" }}>
-              <button type="button" className="btn btn-secondary" onClick={() => setIsEditModalOpen(false)}>
+            <div className="modal-footer" style={{ padding: "16px 0 0 0", marginTop: "16px", display: "flex", justifyContent: "flex-end", gap: "12px" }}>
+              <button type="button" className="btn btn-secondary" onClick={() => setIsEditModalOpen(false)} disabled={saving}>
                 Cancel
               </button>
-              <button type="submit" className="btn btn-primary">
-                Save Changes
+              <button type="submit" className="btn btn-primary" disabled={saving}>
+                {saving ? "Saving..." : "Save Changes"}
               </button>
             </div>
           </form>

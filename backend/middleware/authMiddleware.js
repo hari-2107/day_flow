@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 
 // Verify incoming Bearer token
 const verifyToken = (req, res, next) => {
-  const authHeader = req.headers.authorization;
+  const authHeader = req.headers.authorization || req.headers.Authorization;
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return res.status(401).json({ message: 'Access denied. No token provided.' });
   }
@@ -13,14 +13,19 @@ const verifyToken = (req, res, next) => {
     req.user = decoded; // { id, role, employee_id, email }
     next();
   } catch (error) {
-    return res.status(403).json({ message: 'Invalid or expired token.' });
+    return res.status(401).json({ message: 'Invalid or expired token.' });
   }
 };
 
 // Check if user has required role (e.g., ADMIN vs EMPLOYEE)
 const requireRole = (...allowedRoles) => {
+  const normalizedAllowed = allowedRoles.map(r => r.toUpperCase());
   return (req, res, next) => {
-    if (!req.user || !allowedRoles.includes(req.user.role)) {
+    if (!req.user || !req.user.role) {
+      return res.status(403).json({ message: 'Forbidden: Insufficient privileges.' });
+    }
+    const userRole = req.user.role.toUpperCase();
+    if (!normalizedAllowed.includes(userRole)) {
       return res.status(403).json({ message: 'Forbidden: Insufficient privileges.' });
     }
     next();

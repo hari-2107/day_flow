@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { Mail, Lock, Eye, EyeOff, ArrowRight, Shield } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, ArrowRight, Shield, AlertCircle } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { authService } from "../services/api";
 
 export default function Login() {
   const [formData, setFormData] = useState({
@@ -10,29 +11,43 @@ export default function Login() {
     role: "Employee"
   });
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
+
   const navigate = useNavigate();
   const { login } = useAuth();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    if (errorMsg) setErrorMsg("");
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setErrorMsg("");
 
-    const isAdmin = formData.role === "Admin" || formData.email.toLowerCase().includes("admin");
+    try {
+      const res = await authService.signin({
+        email: formData.email,
+        password: formData.password
+      });
 
-    login({
-      email: formData.email,
-      role: isAdmin ? "Admin" : "Employee",
-      name: isAdmin ? "HR Admin" : "Alex Morgan",
-      employeeId: isAdmin ? "EMP-ADMIN-01" : "EMP-1042"
-    });
+      const { user, token } = res.data;
+      login(user, token);
 
-    if (isAdmin) {
-      navigate("/admin/dashboard");
-    } else {
-      navigate("/employee/dashboard");
+      const userRole = (user.role || "").toUpperCase();
+      if (userRole === "ADMIN") {
+        navigate("/admin/dashboard");
+      } else {
+        navigate("/employee/dashboard");
+      }
+    } catch (err) {
+      console.error("Login error:", err);
+      const serverMessage = err.response?.data?.message || "Invalid credentials or server connection failed.";
+      setErrorMsg(serverMessage);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -51,16 +66,23 @@ export default function Login() {
             <p>Sign in to your account to continue</p>
           </div>
 
+          {errorMsg && (
+            <div className="alert alert-danger" style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "16px", padding: "12px", background: "#fee2e2", color: "#991b1b", borderRadius: "8px", fontSize: "14px" }}>
+              <AlertCircle size={18} />
+              <span>{errorMsg}</span>
+            </div>
+          )}
+
           <form className="auth-form" onSubmit={handleSubmit}>
             <div className="form-group">
-              <label className="form-label required">Role</label>
+              <label className="form-label required">Role Preference</label>
               <div className="input-wrapper">
                 <Shield className="input-icon" size={18} />
                 <select
                   name="role"
                   value={formData.role}
                   onChange={handleChange}
-                  style={{ height: "62px", paddingLeft: "54px", fontSize: "16px" }}
+                  style={{ height: "52px", paddingLeft: "48px", fontSize: "15px" }}
                 >
                   <option value="Employee">Employee</option>
                   <option value="Admin">Admin / HR Officer</option>
@@ -105,23 +127,26 @@ export default function Login() {
               </div>
             </div>
 
-            <div className="form-row">
+            <div className="form-row" style={{ marginTop: "-8px", marginBottom: "16px" }}>
               <label className="checkbox-row">
-                <input type="checkbox" />
+                <input type="checkbox" defaultChecked />
                 <span>Remember me</span>
               </label>
-              <button type="button" className="forgot-password">
-                Forgot password?
-              </button>
             </div>
 
-            <button type="submit" className="btn btn-primary btn-full btn-lg">
-              <span>Sign In</span>
-              <ArrowRight size={18} />
+            <button type="submit" className="btn btn-primary btn-full btn-lg" disabled={loading}>
+              {loading ? (
+                <span>Signing In...</span>
+              ) : (
+                <>
+                  <span>Sign In</span>
+                  <ArrowRight size={18} />
+                </>
+              )}
             </button>
           </form>
 
-          <div className="auth-footer">
+          <div className="auth-footer" style={{ marginTop: "20px" }}>
             Don't have an account? <Link to="/register">Sign up</Link>
           </div>
         </div>

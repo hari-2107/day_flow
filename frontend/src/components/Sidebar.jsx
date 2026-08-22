@@ -12,9 +12,13 @@ import {
   Bell,
   X
 } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
 
-export default function Sidebar({ role = "Employee", user = { name: "Alex Morgan", role: "Software Engineer" }, isOpen, onClose }) {
-  const isAdmin = role === "Admin";
+export default function Sidebar({ role, user: userProp, isOpen, onClose }) {
+  const { user: authUser } = useAuth();
+  const currentUser = userProp || authUser || { name: "User", role: "Employee" };
+  const currentRole = role || currentUser.role || "EMPLOYEE";
+  const isAdmin = (currentRole || "").toUpperCase() === "ADMIN";
 
   return (
     <>
@@ -79,19 +83,19 @@ export default function Sidebar({ role = "Employee", user = { name: "Alex Morgan
           ) : (
             <>
               <div className="sidebar-section-title">HR Management</div>
-              <NavLink to="/employees" className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`} onClick={onClose}>
+              <NavLink to="/admin/employees" className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`} onClick={onClose}>
                 <Users size={18} />
                 <span>Employees</span>
               </NavLink>
-              <NavLink to="/employee/attendance" className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`} onClick={onClose}>
+              <NavLink to="/admin/attendance" className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`} onClick={onClose}>
                 <Clock size={18} />
                 <span>All Attendance</span>
               </NavLink>
-              <NavLink to="/employee/leave" className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`} onClick={onClose}>
+              <NavLink to="/admin/leaves" className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`} onClick={onClose}>
                 <CheckSquare size={18} />
                 <span>Leave Approvals</span>
               </NavLink>
-              <NavLink to="/payroll" className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`} onClick={onClose}>
+              <NavLink to="/admin/payroll" className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`} onClick={onClose}>
                 <DollarSign size={18} />
                 <span>Payroll Control</span>
               </NavLink>
@@ -104,11 +108,13 @@ export default function Sidebar({ role = "Employee", user = { name: "Alex Morgan
         </nav>
 
         <div className="sidebar-user">
-          <div className="sidebar-user-content">
-            <div className="avatar">{user.name.charAt(0)}</div>
+          <div className="sidebar-user-content" style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            <div className="avatar" style={{ width: "36px", height: "36px", borderRadius: "50%", background: "#4f46e5", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: "bold" }}>
+              {(currentUser.name || "U").charAt(0)}
+            </div>
             <div className="user-info">
-              <strong>{user.name}</strong>
-              <span>{user.role}</span>
+              <strong style={{ display: "block", fontSize: "14px" }}>{currentUser.name}</strong>
+              <span style={{ fontSize: "12px", color: "#94a3b8" }}>{currentUser.role || currentUser.designation}</span>
             </div>
           </div>
         </div>

@@ -1,46 +1,52 @@
-import axios from "axios";
-
-const API = axios.create({
-  baseURL: "http://localhost:5000/api", // Member 2 will connect this endpoint
-  headers: {
-    "Content-Type": "application/json"
-  }
-});
-
-// Request interceptor for attaching auth tokens
-API.interceptors.request.use((config) => {
-  const user = JSON.parse(localStorage.getItem("dayflow_user") || "{}");
-  if (user?.token) {
-    config.headers.Authorization = `Bearer ${user.token}`;
-  }
-  return config;
-});
+import API from "../api/axios";
 
 // Auth endpoints
 export const authService = {
-  login: (credentials) => API.post("/auth/login", credentials),
-  register: (data) => API.post("/auth/register", data),
-  verifyOtp: (code) => API.post("/auth/verify-otp", { code })
+  signin: (credentials) => API.post("/auth/signin", credentials),
+  signup: (data) => API.post("/auth/signup", data),
+  verifyEmail: (code, email) => API.post("/auth/verify-email", { code, email }),
+  // Backward compatibility alias
+  login: (credentials) => API.post("/auth/signin", credentials),
+  register: (data) => API.post("/auth/signup", data)
+};
+
+// Profile endpoints
+export const profileService = {
+  getProfile: () => API.get("/profile/me"),
+  updateProfile: (data) => API.patch("/profile/me", data)
+};
+
+// Admin endpoints
+export const adminService = {
+  getEmployees: () => API.get("/admin/employees"),
+  updateEmployee: (id, data) => API.put(`/admin/employees/${id}`, data),
+  getAttendance: () => API.get("/admin/attendance"),
+  getLeaves: () => API.get("/admin/leaves"),
+  getPayroll: () => API.get("/admin/payroll"),
+  updatePayroll: (userId, data) => API.put(`/admin/payroll/${userId}`, data)
 };
 
 // Attendance endpoints
 export const attendanceService = {
   checkIn: () => API.post("/attendance/check-in"),
   checkOut: () => API.post("/attendance/check-out"),
-  getLogs: () => API.get("/attendance/logs")
+  getMyAttendance: () => API.get("/attendance/my"),
+  getAdminAttendance: () => API.get("/admin/attendance")
 };
 
 // Leave endpoints
 export const leaveService = {
-  getLeaves: () => API.get("/leaves"),
   applyLeave: (leaveData) => API.post("/leaves/apply", leaveData),
-  updateStatus: (leaveId, status) => API.patch(`/leaves/${leaveId}`, { status })
+  getMyLeaves: () => API.get("/leaves/my"),
+  getAdminLeaves: () => API.get("/admin/leaves"),
+  updateStatus: (leaveId, status, comments) => API.patch(`/leaves/${leaveId}/status`, { status, comments })
 };
 
 // Payroll endpoints
 export const payrollService = {
-  getPayslips: () => API.get("/payroll/payslips"),
-  getSalaryStructure: () => API.get("/payroll/structure")
+  getMyPayroll: () => API.get("/payroll/me"),
+  getAdminPayroll: () => API.get("/admin/payroll"),
+  updatePayroll: (userId, data) => API.put(`/admin/payroll/${userId}`, data)
 };
 
 export default API;
