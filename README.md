@@ -6,7 +6,7 @@
 
 **Every workday, perfectly aligned.**
 
-<img src="https://readme-typing-svg.demolab.com?font=Orbitron&weight=700&size=22&pause=1000&color=00F7FF&center=true&vCenter=true&width=700&lines=SMART+HR+MANAGEMENT;ATTENDANCE+%7C+LEAVE+%7C+PAYROLL;EMPLOYEE+%7C+ADMIN+WORKFLOWS;BUILT+FOR+THE+FUTURE+OF+HR" alt="Typing Animation" />
+<img src="https://readme-typing-svg.demolab.com?font=Orbitron&weight=700&size=22&pause=1000&color=00F7FF&center=true&vCenter=true&width=700&lines=SMART+HR+MANAGEMENT;ATTENDANCE+%7C+LEAVE+%7C+PAYROLL;EMPLOYEE+%7C+ADMIN+WORKFLOWS;BUILT+FOR+THE+FUTURE+OF+HR+AND+EMPLOYEE" alt="Typing Animation" />
 
 <br>
 
