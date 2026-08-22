@@ -1,25 +1,46 @@
 import React from "react";
-import { Bell, LogOut } from "lucide-react";
+import { Bell, LogOut, Menu } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
-export default function Navbar({ title = "Dashboard", subtitle = "Welcome back!" }) {
+export default function Navbar({ title = "Dashboard", subtitle = "Welcome back!", toggleMobileSidebar }) {
   const navigate = useNavigate();
+  const { user, logout, employeeUnreadCount, adminUnreadCount } = useAuth();
+
+  const isAdmin = user?.role === "Admin";
+  const unreadCount = isAdmin ? adminUnreadCount : employeeUnreadCount;
+  const notificationsPath = isAdmin ? "/admin/notifications" : "/employee/notifications";
 
   const handleLogout = () => {
+    logout();
     navigate("/login");
   };
 
   return (
     <header className="topbar">
-      <div className="topbar-left">
-        <h1>{title}</h1>
-        <p>{subtitle}</p>
+      <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+        {toggleMobileSidebar && (
+          <button 
+            type="button" 
+            className="mobile-menu-btn" 
+            onClick={toggleMobileSidebar}
+            aria-label="Toggle navigation"
+          >
+            <Menu size={20} />
+          </button>
+        )}
+        <div className="topbar-left">
+          <h1>{title}</h1>
+          <p>{subtitle}</p>
+        </div>
       </div>
 
       <div className="topbar-right">
-        <Link to="/notifications" className="notification-btn" aria-label="Notifications">
+        <Link to={notificationsPath} className="notification-btn" aria-label="Notifications">
           <Bell size={18} />
-          <span className="notification-badge">3</span>
+          {unreadCount > 0 && (
+            <span className="notification-badge">{unreadCount}</span>
+          )}
         </Link>
 
         <button className="btn btn-secondary" onClick={handleLogout}>

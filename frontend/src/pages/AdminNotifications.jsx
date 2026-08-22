@@ -2,70 +2,70 @@ import React, { useState } from "react";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
 import { useAuth } from "../context/AuthContext";
-import { Bell, CheckCheck, Clock, Calendar, IndianRupee, ShieldAlert, Check } from "lucide-react";
+import { Bell, CheckCheck, UserPlus, FileText, AlertTriangle, CheckSquare, Check } from "lucide-react";
 
-export default function Notifications() {
-  const { user, setEmployeeUnreadCount } = useAuth();
+export default function AdminNotifications() {
+  const { user, setAdminUnreadCount } = useAuth();
 
   const [notifications, setNotifications] = useState([
     {
       id: 1,
-      title: "Salary Slip Released (August 2026)",
-      message: "Your monthly payslip for August 2026 has been generated and credited to your HDFC bank account.",
-      time: "2 hours ago",
-      icon: IndianRupee,
-      color: "success",
-      read: false
-    },
-    {
-      id: 2,
-      title: "Leave Request Approved",
-      message: "Your Casual Leave request for August 28 - August 29 has been approved by HR.",
-      time: "Yesterday",
-      icon: Calendar,
+      title: "New Leave Request Submitted",
+      message: "Adhithya N (EMP-1042) submitted a Casual Leave application for August 28 - 29.",
+      time: "15 mins ago",
+      icon: CheckSquare,
       color: "info",
       read: false
     },
     {
-      id: 3,
-      title: "Attendance Recorded",
-      message: "Check-in logged today at 09:02 AM. Have a productive day!",
-      time: "Today",
-      icon: Clock,
+      id: 2,
+      title: "Attendance Anomaly Flagged",
+      message: "2 employees arrived past the 09:30 AM buffer time today.",
+      time: "1 hour ago",
+      icon: AlertTriangle,
       color: "warning",
       read: false
     },
     {
+      id: 3,
+      title: "New Employee Onboarded",
+      message: "Vikram Seth has joined Engineering as Full Stack Developer (EMP-1046).",
+      time: "Yesterday",
+      icon: UserPlus,
+      color: "success",
+      read: false
+    },
+    {
       id: 4,
-      title: "Security Notice",
-      message: "New login detected from Chrome on Windows in Chennai.",
-      time: "3 days ago",
-      icon: ShieldAlert,
+      title: "Payroll Cycle Ready for Approval",
+      message: "August 2026 salary reconciliation sheets generated for 48 active staff.",
+      time: "2 days ago",
+      icon: FileText,
       color: "primary",
-      read: true
+      read: false
     }
   ]);
 
   const handleMarkAllRead = () => {
     const updated = notifications.map(n => ({ ...n, read: true }));
     setNotifications(updated);
-    setEmployeeUnreadCount(0);
+    setAdminUnreadCount(0);
   };
 
   const toggleSingleRead = (id) => {
     const updated = notifications.map(n => n.id === id ? { ...n, read: true } : n);
     setNotifications(updated);
     const remaining = updated.filter(n => !n.read).length;
-    setEmployeeUnreadCount(remaining);
+    setAdminUnreadCount(remaining);
   };
 
   const activeUnread = notifications.filter(n => !n.read).length;
 
   return (
     <div className="dashboard-layout">
-      <Sidebar role="Employee" user={user || { name: "Adhithya N", role: "Software Engineer" }} />
+      <Sidebar role="Admin" user={user || { name: "Aadhavan Raman", role: "HR Administrator" }} />
       <main className="dashboard-main">
-        <Navbar title="My Notifications" subtitle="Personal activity, payslips, and request updates" />
+        <Navbar role="Admin" title="HR Operations & Alerts" subtitle="System approvals, employee submissions, and compliance alerts" />
 
         <div className="dashboard-content">
           <div className="page-header-row">
@@ -74,8 +74,8 @@ export default function Notifications() {
                 <Bell size={18} />
               </div>
               <div>
-                <h2>Employee Inbox</h2>
-                <p>You have <strong>{activeUnread} unread</strong> notification{activeUnread === 1 ? "" : "s"}</p>
+                <h2>HR Action Center</h2>
+                <p>You have <strong>{activeUnread} pending</strong> HR alert{activeUnread === 1 ? "" : "s"}</p>
               </div>
             </div>
 
