@@ -115,7 +115,7 @@ export default function Profile() {
             </div>
           )}
 
-          {/* Profile Hero Card with Photo Upload */}
+          {}
           <div className="profile-hero-card" style={{ display: "flex", alignItems: "center", gap: "20px", background: "#fff", padding: "24px", borderRadius: "12px", border: "1px solid #e2e8f0", marginBottom: "24px" }}>
             <div className="profile-photo-wrapper" style={{ position: "relative" }}>
               {formData.avatar ? (
@@ -146,7 +146,7 @@ export default function Profile() {
 
           <form onSubmit={handleSave}>
             <div className="content-grid equal" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "24px" }}>
-              {/* Personal Details */}
+              {}
               <div className="card">
                 <div className="card-header">
                   <h3>Personal Information</h3>
@@ -198,7 +198,7 @@ export default function Profile() {
                 </div>
               </div>
 
-              {/* Employment & Compensation Overview */}
+              {}
               <div className="card">
                 <div className="card-header">
                   <h3>Employment & Pay Scale</h3>

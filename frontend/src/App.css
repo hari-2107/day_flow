@@ -1,20 +1,16 @@
-/* =========================================================
-   DAYFLOW HRMS - COMPLETE UNIFIED STYLESHEET (App.css)
-   Neo-Canvas Light Aesthetic | High Contrast Obsidian & Slate
-   Full Responsive System | Modals, Dropdowns & Animations
-   ========================================================= */
+
 
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap');
 
 :root {
-  /* Dynamic Primary Tones */
+  
   --primary: #4338ca;
   --primary-rgb: 67, 56, 202;
   --primary-hover: #3730a3;
   --primary-soft: #eef2ff;
   --primary-glow: rgba(67, 56, 202, 0.18);
 
-  /* Vivid Accents */
+  
   --accent-cyan: #0284c7;
   --accent-cyan-soft: #e0f2fe;
   --accent-emerald: #059669;
@@ -24,28 +20,28 @@
   --accent-rose: #e11d48;
   --accent-rose-soft: #ffe4e6;
 
-  /* Status Tokens */
+  
   --success: #059669;
   --warning: #d97706;
   --danger: #e11d48;
 
-  /* Surfaces & Canvas */
+  
   --canvas-bg: #f8fafc;
   --surface-solid: #ffffff;
   --surface-subtle: #f1f5f9;
 
-  /* Ultra High-Contrast Typography */
+  
   --text-main: #090d16;
   --text-heading: #020617;
   --text-muted: #334155;
   --text-subtle: #475569;
 
-  /* Architectural Borders & Focus Rings */
+  
   --border-subtle: rgba(203, 213, 225, 0.9);
   --border-card: rgba(203, 213, 225, 0.85);
   --ring-focus: rgba(67, 56, 202, 0.25);
 
-  /* Precision Radii */
+  
   --radius-xs: 8px;
   --radius-sm: 12px;
   --radius-md: 16px;
@@ -53,7 +49,7 @@
   --radius-xl: 28px;
   --radius-full: 9999px;
 
-  /* Custom Elevation & Shadows */
+  
   --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.04), 0 1px 2px rgba(15, 23, 42, 0.02);
   --shadow-card: 0 4px 16px -2px rgba(15, 23, 42, 0.06), 0 2px 6px -1px rgba(15, 23, 42, 0.03);
   --shadow-hover: 0 14px 30px -6px rgba(67, 56, 202, 0.14);
@@ -64,9 +60,7 @@
   font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-/* =========================================================
-   BASE RESET & CANVAS TEXTURE
-   ========================================================= */
+
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
@@ -92,18 +86,14 @@ a {
   text-decoration: none;
 }
 
-/* =========================================================
-   GLOBAL HEADINGS (ULTRA HIGH-CONTRAST OBSIDIAN)
-   ========================================================= */
+
 h1, h2, h3, h4, h5, h6 {
   color: var(--text-heading) !important;
   letter-spacing: -0.025em;
   font-feature-settings: "cv02", "cv03", "cv04", "cv11";
 }
 
-/* =========================================================
-   KEYFRAME ANIMATIONS
-   ========================================================= */
+
 @keyframes slideUpFade {
   0% {
     opacity: 0;
@@ -120,9 +110,7 @@ h1, h2, h3, h4, h5, h6 {
   50% { transform: translateY(-4px); }
 }
 
-/* =========================================================
-   AUTHENTICATION VIEWPORT (LOGIN & REGISTER)
-   ========================================================= */
+
 .auth-page {
   min-height: 100vh;
   width: 100%;
@@ -244,9 +232,7 @@ h1, h2, h3, h4, h5, h6 {
   margin-top: 4px;
 }
 
-/* =========================================================
-   FORM CONTROLS & PRECISION ALIGNMENTS
-   ========================================================= */
+
 .form-group {
   margin-bottom: 18px;
   display: flex;
@@ -400,9 +386,7 @@ h1, h2, h3, h4, h5, h6 {
   text-decoration: underline;
 }
 
-/* =========================================================
-   BUTTONS & ALERTS
-   ========================================================= */
+
 .btn {
   height: 46px;
   padding: 0 20px;
@@ -502,9 +486,7 @@ h1, h2, h3, h4, h5, h6 {
   margin-left: 4px;
 }
 
-/* =========================================================
-   APP SHELL (SIDEBAR & TOPBAR)
-   ========================================================= */
+
 .dashboard-layout {
   min-height: 100vh;
   display: flex;
@@ -638,9 +620,7 @@ h1, h2, h3, h4, h5, h6 {
   color: #475569 !important;
 }
 
-/* =========================================================
-   TOPBAR VIEWPORT
-   ========================================================= */
+
 .dashboard-main {
   flex: 1;
   margin-left: var(--sidebar-w);
@@ -739,9 +719,7 @@ h1, h2, h3, h4, h5, h6 {
   animation: slideUpFade 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-/* =========================================================
-   STATISTICS & METRIC CARDS
-   ========================================================= */
+
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -808,9 +786,7 @@ h1, h2, h3, h4, h5, h6 {
   color: #475569 !important;
 }
 
-/* =========================================================
-   CONTAINER CARDS, GRIDS & TABLES
-   ========================================================= */
+
 .card {
   background-color: #ffffff;
   border: 1.5px solid var(--border-card);
@@ -898,7 +874,7 @@ h1, h2, h3, h4, h5, h6 {
   background-color: #f8fafc;
 }
 
-/* Status Badges */
+
 .status {
   display: inline-flex;
   align-items: center;
@@ -936,7 +912,7 @@ h1, h2, h3, h4, h5, h6 {
   gap: 4px;
 }
 
-/* Attendance Punch Card */
+
 .attendance-card {
   padding: 28px 18px;
   text-align: center;
@@ -954,9 +930,7 @@ h1, h2, h3, h4, h5, h6 {
   margin: 8px 0;
 }
 
-/* =========================================================
-   INR PAYROLL BANNER & STATUTORY LEDGER
-   ========================================================= */
+
 .salary-card-inr {
   padding: 26px;
   background: linear-gradient(135deg, #1e1b4b 0%, #312e81 40%, #4338ca 100%);
@@ -1115,9 +1089,7 @@ h1, h2, h3, h4, h5, h6 {
 .text-danger { color: var(--danger) !important; }
 .text-primary { color: var(--primary) !important; }
 
-/* =========================================================
-   PROFILE HERO & PHOTO UPLOADER
-   ========================================================= */
+
 .profile-hero-card {
   display: flex;
   align-items: center;
@@ -1207,9 +1179,7 @@ h1, h2, h3, h4, h5, h6 {
   cursor: not-allowed;
 }
 
-/* =========================================================
-   NOTIFICATIONS ACTIVITY LIST (STANDALONE PAGE)
-   ========================================================= */
+
 .page-header-row {
   display: flex;
   justify-content: space-between;
@@ -1335,9 +1305,7 @@ h1, h2, h3, h4, h5, h6 {
   border-color: var(--accent-emerald);
 }
 
-/* =========================================================
-   NOTIFICATION TOGGLE DROPDOWN (TOPBAR)
-   ========================================================= */
+
 .notification-dropdown-wrap {
   position: relative;
 }
@@ -1499,9 +1467,7 @@ h1, h2, h3, h4, h5, h6 {
   border-color: var(--accent-emerald);
 }
 
-/* =========================================================
-   SEARCH, DIRECTORY & MODAL SYSTEM
-   ========================================================= */
+
 .search-wrapper {
   position: relative;
   max-width: 360px;
@@ -1611,9 +1577,7 @@ h1, h2, h3, h4, h5, h6 {
   gap: 10px;
 }
 
-/* =========================================================
-   RESPONSIVE MEDIA QUERIES (DESKTOP, TABLET, MOBILE)
-   ========================================================= */
+
 @media (min-width: 1025px) {
   .dashboard-main {
     margin-left: var(--sidebar-w);
@@ -1717,7 +1681,7 @@ h1, h2, h3, h4, h5, h6 {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
-/* Profile Photo Upload Header */
+
 .profile-hero-card {
   display: flex;
   align-items: center;
@@ -1850,7 +1814,7 @@ h1, h2, h3, h4, h5, h6 {
   cursor: not-allowed;
 }
 
-/* Notifications Page Styling */
+
 .page-header-row {
   display: flex;
   justify-content: space-between;
@@ -1962,7 +1926,7 @@ h1, h2, h3, h4, h5, h6 {
   border-color: var(--accent-emerald);
 }
 
-/* INR Payroll Gradient Banner */
+
 .salary-card-inr {
   padding: 32px;
   background: linear-gradient(135deg, #1e1b4b 0%, #312e81 40%, #4338ca 100%);
@@ -2078,7 +2042,7 @@ h1, h2, h3, h4, h5, h6 {
   margin: 6px 0;
 }
 
-/* Statutory Box Alignment Fix */
+
 .statutory-list {
   display: flex;
   flex-direction: column;
@@ -2126,9 +2090,7 @@ h1, h2, h3, h4, h5, h6 {
 .text-danger { color: var(--danger) !important; }
 .text-primary { color: var(--primary) !important; }
 
-/* =========================================================
-   VERIFICATION CODE SCREEN STYLES
-   ========================================================= */
+
 .verification-container {
   display: flex;
   flex-direction: column;

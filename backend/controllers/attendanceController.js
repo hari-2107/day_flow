@@ -1,19 +1,19 @@
 const Attendance = require('../models/Attendance');
 const User = require('../models/User');
 
-// Helper to format today's date
+
 const getTodayString = () => {
   const date = new Date();
   return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 };
 
-// Helper to format time
+
 const getTimeString = () => {
   const date = new Date();
   return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
 };
 
-// POST /api/attendance/check-in
+
 exports.checkIn = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -52,7 +52,7 @@ exports.checkIn = async (req, res) => {
   }
 };
 
-// POST /api/attendance/check-out
+
 exports.checkOut = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -68,7 +68,7 @@ exports.checkOut = async (req, res) => {
     }
 
     record.check_out = nowTime;
-    record.working_hours = '8h 00m'; // Standard shift completed
+    record.working_hours = '8h 00m'; 
     await record.save();
 
     return res.status(200).json({ message: 'Checked out successfully.', record });
@@ -77,7 +77,7 @@ exports.checkOut = async (req, res) => {
   }
 };
 
-// GET /api/attendance/my
+
 exports.getMyAttendance = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -92,7 +92,7 @@ exports.getMyAttendance = async (req, res) => {
   }
 };
 
-// GET /api/admin/attendance
+
 exports.getAdminAttendance = async (req, res) => {
   try {
     const logs = await Attendance.findAll({

@@ -6,7 +6,7 @@ const leaveController = require('../controllers/leaveController');
 const payrollController = require('../controllers/payrollController');
 const { verifyToken, requireRole } = require('../middleware/authMiddleware');
 
-// All endpoints in admin router require ADMIN role
+
 router.use(verifyToken, requireRole('ADMIN'));
 
 router.get('/employees', adminController.getAllEmployees);

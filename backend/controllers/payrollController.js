@@ -1,7 +1,7 @@
 const Payroll = require('../models/Payroll');
 const User = require('../models/User');
 
-// GET /api/payroll/me
+
 exports.getMyPayroll = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -13,7 +13,7 @@ exports.getMyPayroll = async (req, res) => {
     });
 
     if (payslips.length === 0 && user) {
-      // Generate default current payslip record
+      
       const defaultRecord = await Payroll.create({
         user_id: userId,
         employee_id: user.employee_id,
@@ -42,7 +42,7 @@ exports.getMyPayroll = async (req, res) => {
   }
 };
 
-// GET /api/admin/payroll
+
 exports.getAdminPayroll = async (req, res) => {
   try {
     const records = await Payroll.findAll({
@@ -55,7 +55,7 @@ exports.getAdminPayroll = async (req, res) => {
   }
 };
 
-// PUT /api/admin/payroll/:userId
+
 exports.updateUserPayroll = async (req, res) => {
   try {
     const { userId } = req.params;

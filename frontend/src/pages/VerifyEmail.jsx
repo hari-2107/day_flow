@@ -32,7 +32,7 @@ export default function VerifyEmail() {
       const fullCode = code.join("");
       await authService.verifyEmail(fullCode, email);
       
-      // Redirect to /login with verified success notice
+      
       navigate("/login", {
         state: { notice: "Email verified successfully! Please sign in to access your workspace." }
       });

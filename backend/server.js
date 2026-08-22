@@ -11,7 +11,7 @@ const Payroll = require('./models/Payroll');
 
 const app = express();
 
-// CORS Middleware allowing specified origins and HTTP methods
+
 app.use(cors({
   origin: ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175', 'http://localhost:3000'],
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
@@ -21,7 +21,7 @@ app.use(cors({
 
 app.use(express.json());
 
-// API Routes mounting
+
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/profile', require('./routes/profileRoutes'));
 app.use('/api/admin', require('./routes/adminRoutes'));
@@ -29,12 +29,12 @@ app.use('/api/attendance', require('./routes/attendanceRoutes'));
 app.use('/api/leaves', require('./routes/leaveRoutes'));
 app.use('/api/payroll', require('./routes/payrollRoutes'));
 
-// Global 404 Handler
+
 app.use((req, res) => {
   res.status(404).json({ message: `Route ${req.method} ${req.url} not found` });
 });
 
-// Seed Initial Data
+
 const seedInitialData = async () => {
   try {
     const userCount = await User.count();
@@ -82,7 +82,7 @@ const seedInitialData = async () => {
         salary: '$4,800'
       });
 
-      // Seed initial attendance records
+      
       await Attendance.create({
         user_id: emp1.id,
         employee_id: emp1.employee_id,
@@ -94,7 +94,7 @@ const seedInitialData = async () => {
         status: 'Present'
       });
 
-      // Seed initial leave request
+      
       await Leave.create({
         user_id: emp1.id,
         employee_id: emp1.employee_id,
@@ -107,7 +107,7 @@ const seedInitialData = async () => {
         admin_comments: 'Get well soon!'
       });
 
-      // Seed initial payroll record
+      
       await Payroll.create({
         user_id: emp1.id,
         employee_id: emp1.employee_id,
@@ -134,7 +134,7 @@ const seedInitialData = async () => {
 
 const PORT = process.env.PORT || 5000;
 
-// Sync database and start server
+
 sequelize.sync()
   .then(async () => {
     console.log('✅ Database connected and models synchronized');

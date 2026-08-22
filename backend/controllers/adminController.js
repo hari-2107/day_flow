@@ -1,6 +1,6 @@
 const User = require('../models/User');
 
-// GET /api/admin/employees
+
 exports.getAllEmployees = async (req, res) => {
   try {
     const users = await User.findAll({
@@ -27,10 +27,10 @@ exports.getAllEmployees = async (req, res) => {
   }
 };
 
-// PUT /api/admin/employees/:id
+
 exports.updateEmployee = async (req, res) => {
   try {
-    const { id } = req.params; // Can be dbId or employee_id
+    const { id } = req.params; 
     let user = await User.findOne({
       where: {
         [require('sequelize').Op.or]: [

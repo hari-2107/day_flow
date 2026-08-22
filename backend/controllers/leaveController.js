@@ -1,7 +1,7 @@
 const Leave = require('../models/Leave');
 const User = require('../models/User');
 
-// POST /api/leaves/apply
+
 exports.applyLeave = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -26,7 +26,7 @@ exports.applyLeave = async (req, res) => {
   }
 };
 
-// GET /api/leaves/my
+
 exports.getMyLeaves = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -41,7 +41,7 @@ exports.getMyLeaves = async (req, res) => {
   }
 };
 
-// GET /api/admin/leaves
+
 exports.getAdminLeaves = async (req, res) => {
   try {
     const leaves = await Leave.findAll({
@@ -54,7 +54,7 @@ exports.getAdminLeaves = async (req, res) => {
   }
 };
 
-// PATCH /api/leaves/:id/status
+
 exports.updateLeaveStatus = async (req, res) => {
   try {
     const { id } = req.params;

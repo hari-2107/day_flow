@@ -13,29 +13,29 @@ export default function Employees() {
   const [errorMsg, setErrorMsg] = useState("");
   const [bannerNotice, setBannerNotice] = useState("");
 
-  // Search input state with debouncing
+  
   const [searchInput, setSearchInput] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
 
-  // Pagination state
+  
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
-  // Edit Modal state
+  
   const [selectedEmp, setSelectedEmp] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [saving, setSaving] = useState(false);
 
-  // Debounce search input
+  
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedSearch(searchInput);
-      setCurrentPage(1); // Reset to page 1 on search
+      setCurrentPage(1); 
     }, 300);
     return () => clearTimeout(handler);
   }, [searchInput]);
 
-  // Fetch employees from API
+  
   const fetchEmployees = async () => {
     setLoading(true);
     setErrorMsg("");
@@ -54,7 +54,7 @@ export default function Employees() {
     fetchEmployees();
   }, []);
 
-  // Filtered employees list
+  
   const filteredEmployees = useMemo(() => {
     if (!debouncedSearch) return employees;
     const term = debouncedSearch.toLowerCase();
@@ -66,7 +66,7 @@ export default function Employees() {
     );
   }, [employees, debouncedSearch]);
 
-  // Paginated records
+  
   const totalPages = Math.ceil(filteredEmployees.length / itemsPerPage) || 1;
   const paginatedEmployees = useMemo(() => {
     const start = (currentPage - 1) * itemsPerPage;
@@ -204,7 +204,7 @@ export default function Employees() {
                     </table>
                   </div>
 
-                  {/* Pagination Toolbar */}
+                  {}
                   {filteredEmployees.length > 0 && (
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px 24px", borderTop: "1px solid #e2e8f0" }}>
                       <span style={{ fontSize: "14px", color: "#64748b" }}>
@@ -240,7 +240,7 @@ export default function Employees() {
         </div>
       </main>
 
-      {/* Admin Edit Modal */}
+      {}
       <Modal
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}

@@ -25,7 +25,7 @@ export default function Navbar({ title = "Dashboard", subtitle = "Welcome back!"
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
 
-  // Determine active role
+  
   const isAdmin = 
     role === "Admin" || 
     location.pathname.startsWith("/admin") || 
@@ -34,7 +34,7 @@ export default function Navbar({ title = "Dashboard", subtitle = "Welcome back!"
 
   const unreadCount = isAdmin ? adminUnreadCount : employeeUnreadCount;
 
-  // Role-specific notifications data
+  
   const [employeeNotifications, setEmployeeNotifications] = useState([
     {
       id: 1,
@@ -115,12 +115,12 @@ export default function Navbar({ title = "Dashboard", subtitle = "Welcome back!"
 
   const activeNotifications = isAdmin ? adminNotifications : employeeNotifications;
 
-  // Toggle Bell Dropdown
+  
   const handleToggle = () => {
     setIsOpen(prev => !prev);
   };
 
-  // Close when clicking outside
+  
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -131,7 +131,7 @@ export default function Navbar({ title = "Dashboard", subtitle = "Welcome back!"
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Mark all notifications as read
+  
   const handleMarkAllRead = () => {
     if (isAdmin) {
       setAdminNotifications(adminNotifications.map(n => ({ ...n, read: true })));
@@ -142,7 +142,7 @@ export default function Navbar({ title = "Dashboard", subtitle = "Welcome back!"
     }
   };
 
-  // Mark a single notification as read
+  
   const handleSingleRead = (id) => {
     if (isAdmin) {
       const updated = adminNotifications.map(n => n.id === id ? { ...n, read: true } : n);
@@ -180,7 +180,7 @@ export default function Navbar({ title = "Dashboard", subtitle = "Welcome back!"
       </div>
 
       <div className="topbar-right">
-        {/* Toggle Notification Wrapper */}
+        {}
         <div className="notification-dropdown-wrap" ref={dropdownRef}>
           <button 
             type="button" 
@@ -194,7 +194,7 @@ export default function Navbar({ title = "Dashboard", subtitle = "Welcome back!"
             )}
           </button>
 
-          {/* Floating Dropdown Panel */}
+          {}
           {isOpen && (
             <div className="notification-dropdown-menu">
               <div className="dropdown-header">

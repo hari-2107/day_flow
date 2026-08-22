@@ -12,7 +12,7 @@ if (process.env.DATABASE_URL || process.env.DB_URI) {
     }
   });
 } else {
-  // Fallback to SQLite database file
+  
   const dbPath = path.join(__dirname, '..', 'dayflow.sqlite');
   sequelize = new Sequelize({
     dialect: 'sqlite',

@@ -7,7 +7,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import VerifyEmail from "./pages/VerifyEmail";
 
-/* Employee Portal Pages */
+
 import EmployeeDashboard from "./pages/EmployeeDashboard";
 import Attendance from "./pages/Attendance";
 import Leave from "./pages/Leave";
@@ -15,7 +15,7 @@ import Payroll from "./pages/Payroll";
 import Profile from "./pages/Profile";
 import Notifications from "./pages/Notifications";
 
-/* Admin Portal Pages */
+
 import AdminDashboard from "./pages/AdminDashboard";
 import Employees from "./pages/Employees";
 import AdminAttendance from "./pages/AdminAttendance";
@@ -28,16 +28,16 @@ export default function App() {
     <AuthProvider>
       <BrowserRouter>
         <Routes>
-          {/* Public Auth Routes */}
+          {}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/verify-email" element={<VerifyEmail />} />
 
-          {/* Root Redirects */}
+          {}
           <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="/dashboard" element={<Navigate to="/login" replace />} />
 
-          {/* Protected Employee Routes */}
+          {}
           <Route element={<ProtectedRoute allowedRoles={["EMPLOYEE", "ADMIN"]} />}>
             <Route path="/employee/dashboard" element={<EmployeeDashboard />} />
             <Route path="/employee/profile" element={<Profile />} />
@@ -48,7 +48,7 @@ export default function App() {
             <Route path="/notifications" element={<Notifications />} />
           </Route>
 
-          {/* Protected Admin Routes */}
+          {}
           <Route element={<ProtectedRoute allowedRoles={["ADMIN"]} />}>
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
             <Route path="/admin/employees" element={<Employees />} />
@@ -62,7 +62,7 @@ export default function App() {
             <Route path="/analytics" element={<Analytics />} />
           </Route>
 
-          {/* Catch-All */}
+          {}
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </BrowserRouter>

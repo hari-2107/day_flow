@@ -4,7 +4,7 @@ const User = require('../models/User');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'dayflow_secret_key';
 
-// POST /api/auth/signup
+
 exports.signup = async (req, res) => {
   try {
     const { email, password, role, name, employeeId, department, designation, phone, address } = req.body;
@@ -73,7 +73,7 @@ exports.signup = async (req, res) => {
   }
 };
 
-// POST /api/auth/signin
+
 exports.signin = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -120,7 +120,7 @@ exports.signin = async (req, res) => {
   }
 };
 
-// POST /api/auth/verify-email
+
 exports.verifyEmail = async (req, res) => {
   try {
     const { code, email } = req.body;

@@ -1,6 +1,6 @@
 const User = require('../models/User');
 
-// GET /api/profile/me
+
 exports.getProfile = async (req, res) => {
   try {
     const user = await User.findByPk(req.user.id, {
@@ -29,7 +29,7 @@ exports.getProfile = async (req, res) => {
   }
 };
 
-// PATCH /api/profile/me
+
 exports.updateProfile = async (req, res) => {
   try {
     const user = await User.findByPk(req.user.id);

@@ -83,7 +83,7 @@ export default function Analytics() {
           </div>
 
           <div className="analytics-grid">
-            {/* Attendance Area Chart */}
+            {}
             <div className="chart-card">
               <div className="card-header" style={{ border: "none", padding: "0 0 16px 0" }}>
                 <h3>Monthly Attendance Trends (%)</h3>
@@ -110,7 +110,7 @@ export default function Analytics() {
               </div>
             </div>
 
-            {/* Department Leave Bar Chart */}
+            {}
             <div className="chart-card">
               <div className="card-header" style={{ border: "none", padding: "0 0 16px 0" }}>
                 <h3>Department Leave Distribution (Days)</h3>

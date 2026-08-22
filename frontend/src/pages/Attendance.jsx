@@ -35,7 +35,7 @@ export default function Attendance() {
     fetchAttendance();
   }, [user, isAdmin]);
 
-  // Find today's attendance record for current user
+  
   const todayRecord = logs.find(l => {
     const isUserMatch = !isAdmin || (l.user_id === user?.id || l.employee_id === user?.employeeId);
     return isUserMatch && (l.date || "").includes(new Date().getDate().toString());
@@ -98,7 +98,7 @@ export default function Attendance() {
           )}
 
           <div className="content-grid">
-            {/* Check in / Check out Widget */}
+            {}
             <div className="card">
               <div className="card-header">
                 <h3>Clock In / Clock Out</h3>
@@ -128,7 +128,7 @@ export default function Attendance() {
               </div>
             </div>
 
-            {/* Attendance Summary */}
+            {}
             <div className="card">
               <div className="card-header">
                 <h3>Attendance Summary</h3>
@@ -156,7 +156,7 @@ export default function Attendance() {
             </div>
           </div>
 
-          {/* Log Table */}
+          {}
           <div className="card" style={{ marginTop: "24px" }}>
             <div className="card-header">
               <h3>{isAdmin ? "All Employee Attendance Logs" : "Attendance Log"}</h3>

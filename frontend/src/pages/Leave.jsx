@@ -16,7 +16,7 @@ export default function Leave() {
   const [bannerNotice, setBannerNotice] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
 
-  // Leave Form state
+  
   const [form, setForm] = useState({
     type: "Casual Leave",
     from: "",
@@ -24,7 +24,7 @@ export default function Leave() {
     remarks: ""
   });
 
-  // Admin approval modal state
+  
   const [selectedLeave, setSelectedLeave] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [adminComments, setAdminComments] = useState("");
@@ -112,7 +112,7 @@ export default function Leave() {
             </div>
           )}
 
-          {/* Leave Balance Stats */}
+          {}
           <div className="stats-grid" style={{ marginBottom: "24px" }}>
             <div className="stat-card">
               <div className="stat-card-top">
@@ -152,7 +152,7 @@ export default function Leave() {
           </div>
 
           <div className="content-grid">
-            {/* Apply Leave Form */}
+            {}
             {!isAdmin && (
               <div className="card">
                 <div className="card-header">
@@ -223,7 +223,7 @@ export default function Leave() {
               </div>
             )}
 
-            {/* Leave Requests Table */}
+            {}
             <div className="card" style={{ gridColumn: isAdmin ? "1 / -1" : "auto" }}>
               <div className="card-header">
                 <h3>{isAdmin ? "All Employee Leave Applications" : "My Leave Requests"}</h3>
@@ -305,7 +305,7 @@ export default function Leave() {
         </div>
       </main>
 
-      {/* Admin Leave Review Modal */}
+      {}
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

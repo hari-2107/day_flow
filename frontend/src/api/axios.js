@@ -8,7 +8,7 @@ const API = axios.create({
   withCredentials: true
 });
 
-// Request Interceptor: Automatically attach Bearer token to every request
+
 API.interceptors.request.use(
   (config) => {
     try {
@@ -27,13 +27,13 @@ API.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Response Interceptor: Handle 401 / 403 auth failures & auto-redirect to login
+
 API.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && (error.response.status === 401 || error.response.status === 403)) {
       const message = error.response.data?.message || "";
-      // If token expired or access denied, clear session & redirect
+      
       if (message.includes("token") || message.includes("denied") || error.response.status === 401) {
         localStorage.removeItem("dayflow_user");
         if (window.location.pathname !== "/login" && window.location.pathname !== "/register") {

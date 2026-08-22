@@ -33,7 +33,7 @@ export default function Register() {
         employeeId: formData.employeeId
       });
 
-      // Save email for verification screen
+      
       sessionStorage.setItem("pending_verify_email", formData.email);
       navigate("/verify-email");
     } catch (err) {

@@ -97,7 +97,7 @@ export default function EmployeeDashboard() {
         />
 
         <div className="dashboard-content">
-          {/* Quick Metrics */}
+          {}
           <div className="stats-grid">
             <div className="stat-card">
               <div className="stat-card-top">
@@ -149,7 +149,7 @@ export default function EmployeeDashboard() {
           </div>
 
           <div className="content-grid">
-            {/* Clock-in Module */}
+            {}
             <div className="card">
               <div className="card-header">
                 <h3>Daily Attendance Terminal</h3>
@@ -177,7 +177,7 @@ export default function EmployeeDashboard() {
               </div>
             </div>
 
-            {/* Quick Actions */}
+            {}
             <div className="card">
               <div className="card-header">
                 <h3>Quick Navigation</h3>

@@ -17,7 +17,7 @@ export default function Payroll() {
   const [errorMsg, setErrorMsg] = useState("");
   const [bannerNotice, setBannerNotice] = useState("");
 
-  // Edit Payroll Modal state for Admin
+  
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [updating, setUpdating] = useState(false);
@@ -94,7 +94,7 @@ export default function Payroll() {
     }
   };
 
-  // Client-side file downloader helper
+  
   const triggerDownload = (filename, content) => {
     const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
     const url = URL.createObjectURL(blob);
@@ -107,7 +107,7 @@ export default function Payroll() {
     URL.revokeObjectURL(url);
   };
 
-  // 1. Generate & Download Overall Salary Statement
+  
   const handleDownloadStatement = () => {
     const listToExport = payrollsList.length > 0 ? payrollsList : fallbackPayslips;
     const statementContent = `=====================================================
@@ -135,7 +135,7 @@ Generated electronically by DayFlow HRMS Enterprise Engine.
     setTimeout(() => setDownloadSuccess(""), 3500);
   };
 
-  // 2. Generate & Download Specific Monthly Payslip
+  
   const handleDownloadSlip = (slip) => {
     const monthName = slip?.month || "August 2026";
     const dateStr = slip?.date || slip?.issued_date || "31 Aug 2026";
@@ -203,7 +203,7 @@ This is a computer-generated salary advice and requires no signature.
             </div>
           )}
 
-          {/* Main Hero Pay Card */}
+          {}
           <div className="salary-card-inr">
             <div className="salary-card-top">
               <div>
@@ -243,7 +243,7 @@ This is a computer-generated salary advice and requires no signature.
             </div>
           </div>
 
-          {/* Breakdown Cards */}
+          {}
           {!isAdmin && (
             <div className="grid-2-col" style={{ marginBottom: "24px" }}>
               <div className="card">
@@ -304,7 +304,7 @@ This is a computer-generated salary advice and requires no signature.
             </div>
           )}
 
-          {/* Payslips Table */}
+          {}
           <div className="card">
             <div className="card-header">
               <h3>{isAdmin ? "Employee Payroll Records" : "Payslip History"}</h3>
@@ -373,7 +373,7 @@ This is a computer-generated salary advice and requires no signature.
         </div>
       </main>
 
-      {/* Admin Edit Payroll Modal */}
+      {}
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

@@ -80,7 +80,7 @@ export default function AdminDashboard() {
         />
 
         <div className="dashboard-content">
-          {/* Org Key Metrics */}
+          {}
           <div className="stats-grid">
             <div className="stat-card">
               <div className="stat-card-top">
@@ -128,7 +128,7 @@ export default function AdminDashboard() {
           </div>
 
           <div className="content-grid">
-            {/* Pending Approvals Table */}
+            {}
             <div className="card">
               <div className="card-header">
                 <h3>Pending Leave Authorizations</h3>
@@ -189,7 +189,7 @@ export default function AdminDashboard() {
               </div>
             </div>
 
-            {/* Quick Operations Module */}
+            {}
             <div className="card">
               <div className="card-header">
                 <h3>Admin Management Hub</h3>
