@@ -10,18 +10,23 @@ exports.signup = async (req, res) => {
     const { email, password, role, name, employeeId, department, designation, phone, address } = req.body;
 
     if (!email || !password) {
-      return res.status(400).json({ message: 'Email and password are required.' });
+      return res.status(400).json({ message: 'Email and password are required for registration.' });
     }
 
-    const existingUser = await User.findOne({ where: { email } });
-    if (existingUser) {
+    const existingEmail = await User.findOne({ where: { email } });
+    if (existingEmail) {
       return res.status(400).json({ message: 'User with this email already exists.' });
     }
 
     const normalizedRole = role && role.toUpperCase() === 'ADMIN' ? 'ADMIN' : 'EMPLOYEE';
     const finalEmployeeId = employeeId || `EMP-${Math.floor(1000 + Math.random() * 9000)}`;
-    const finalName = name || (normalizedRole === 'ADMIN' ? 'HR Officer' : email.split('@')[0]);
 
+    const existingEmpId = await User.findOne({ where: { employee_id: finalEmployeeId } });
+    if (existingEmpId) {
+      return res.status(400).json({ message: 'Employee ID already exists. Please enter a unique Employee ID.' });
+    }
+
+    const finalName = name || (normalizedRole === 'ADMIN' ? 'HR Officer' : email.split('@')[0]);
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await User.create({
@@ -32,8 +37,8 @@ exports.signup = async (req, res) => {
       name: finalName,
       department: department || 'Engineering',
       designation: designation || (normalizedRole === 'ADMIN' ? 'HR Manager' : 'Software Engineer'),
-      phone: phone || '+1 (555) 123-4567',
-      address: address || '123 Tech Park, Suite 400',
+      phone: phone || '+91 98401 23456',
+      address: address || 'No. 45, Anna Salai, Guindy, Chennai',
       is_verified: true
     });
 
@@ -61,7 +66,10 @@ exports.signup = async (req, res) => {
     });
   } catch (error) {
     console.error('Signup error:', error);
-    return res.status(500).json({ message: 'Server error during signup.', error: error.message });
+    if (error.name === 'SequelizeUniqueConstraintError') {
+      return res.status(400).json({ message: 'Email or Employee ID is already registered.' });
+    }
+    return res.status(500).json({ message: error.message || 'Server error during registration.' });
   }
 };
 
@@ -76,12 +84,12 @@ exports.signin = async (req, res) => {
 
     const user = await User.findOne({ where: { email } });
     if (!user) {
-      return res.status(401).json({ message: 'Invalid credentials.' });
+      return res.status(401).json({ message: 'Invalid email or password.' });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(401).json({ message: 'Invalid credentials.' });
+      return res.status(401).json({ message: 'Invalid email or password.' });
     }
 
     const token = jwt.sign(

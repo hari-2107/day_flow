@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Mail, ArrowRight, AlertCircle } from "lucide-react";
+import { Mail, ArrowRight, AlertCircle, CheckCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { authService } from "../services/api";
 
@@ -7,6 +7,7 @@ export default function VerifyEmail() {
   const [code, setCode] = useState(["", "", "", "", "", ""]);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+  const [infoNotice, setInfoNotice] = useState("");
   const navigate = useNavigate();
 
   const handleInputChange = (index, value) => {
@@ -24,23 +25,39 @@ export default function VerifyEmail() {
     e.preventDefault();
     setLoading(true);
     setErrorMsg("");
+    setInfoNotice("");
 
     try {
       const email = sessionStorage.getItem("pending_verify_email") || "";
       const fullCode = code.join("");
       await authService.verifyEmail(fullCode, email);
-      navigate("/login");
+      
+      // Redirect to /login with verified success notice
+      navigate("/login", {
+        state: { notice: "Email verified successfully! Please sign in to access your workspace." }
+      });
     } catch (err) {
       console.error("Verification error:", err);
-      setErrorMsg("Verification failed. Please try again.");
+      setErrorMsg(err.response?.data?.message || "Verification failed. Please check the code and try again.");
     } finally {
       setLoading(false);
     }
   };
 
+  const handleResendCode = () => {
+    setInfoNotice("A fresh 6-digit verification code has been sent to your email.");
+    setTimeout(() => setInfoNotice(""), 4000);
+  };
+
   return (
     <div className="auth-page">
       <div className="auth-container">
+        <div className="auth-brand">
+          <div className="auth-logo">DF</div>
+          <h1>Day<span>Flow</span></h1>
+          <p>Enterprise Workforce & Payroll Suite</p>
+        </div>
+
         <div className="auth-card">
           <div className="verification-container">
             <div className="verification-icon">
@@ -49,8 +66,15 @@ export default function VerifyEmail() {
 
             <div className="auth-card-header">
               <h2>Verify Your Email</h2>
-              <p>We've sent a 6-digit verification code to your email.</p>
+              <p>We've sent a 6-digit verification code to your registered email address.</p>
             </div>
+
+            {infoNotice && (
+              <div className="alert alert-success" style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "16px", padding: "12px", background: "#d1fae5", color: "#065f46", borderRadius: "8px", fontSize: "14px" }}>
+                <CheckCircle size={18} />
+                <span>{infoNotice}</span>
+              </div>
+            )}
 
             {errorMsg && (
               <div className="alert alert-danger" style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "16px", padding: "12px", background: "#fee2e2", color: "#991b1b", borderRadius: "8px", fontSize: "14px" }}>
@@ -86,8 +110,16 @@ export default function VerifyEmail() {
               </button>
             </form>
 
-            <div className="auth-footer" style={{ marginTop: "16px" }}>
-              Didn't receive code? <button type="button" className="resend-link" style={{ border: "none", background: "none", color: "#3b82f6", cursor: "pointer", fontWeight: 600 }}>Resend Code</button>
+            <div className="auth-footer" style={{ marginTop: "20px" }}>
+              Didn't receive code?{" "}
+              <button 
+                type="button" 
+                className="resend-link" 
+                onClick={handleResendCode}
+                style={{ border: "none", background: "none", color: "#4338ca", cursor: "pointer", fontWeight: 600, textDecoration: "underline" }}
+              >
+                Resend Code
+              </button>
             </div>
           </div>
         </div>

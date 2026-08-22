@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import { Mail, Lock, Eye, EyeOff, ArrowRight, ShieldCheck, UserCheck, AlertCircle } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Mail, Lock, Eye, EyeOff, ArrowRight, ShieldCheck, UserCheck, AlertCircle, CheckCircle } from "lucide-react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { authService } from "../services/api";
 
 export default function Login() {
+  const location = useLocation();
   const [activeTab, setActiveTab] = useState("Employee");
   const [formData, setFormData] = useState({
     email: "",
@@ -13,6 +14,7 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+  const [successNotice, setSuccessNotice] = useState(location.state?.notice || "");
 
   const navigate = useNavigate();
   const { login } = useAuth();
@@ -20,6 +22,7 @@ export default function Login() {
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     if (errorMsg) setErrorMsg("");
+    if (successNotice) setSuccessNotice("");
   };
 
   const handleSubmit = async (e) => {
@@ -84,6 +87,13 @@ export default function Login() {
             <h2>{activeTab === "Admin" ? "HR & Admin Sign-In" : "Welcome Back"}</h2>
             <p>{activeTab === "Admin" ? "Sign in with your administrative account" : "Enter your corporate credentials to continue"}</p>
           </div>
+
+          {successNotice && (
+            <div className="alert alert-success" style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "16px", padding: "12px", background: "#d1fae5", color: "#065f46", borderRadius: "8px", fontSize: "14px" }}>
+              <CheckCircle size={18} />
+              <span>{successNotice}</span>
+            </div>
+          )}
 
           {errorMsg && (
             <div className="alert alert-danger" style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "16px", padding: "12px", background: "#fee2e2", color: "#991b1b", borderRadius: "8px", fontSize: "14px" }}>

@@ -38,7 +38,7 @@ export default function Register() {
       navigate("/verify-email");
     } catch (err) {
       console.error("Registration error:", err);
-      const message = err.response?.data?.message || "Registration failed. Please check details.";
+      const message = err.response?.data?.message || err.message || "Registration failed. Please check your credentials.";
       setErrorMsg(message);
     } finally {
       setLoading(false);
