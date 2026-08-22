@@ -1,19 +1,32 @@
 import React from "react";
-import { Bell, LogOut } from "lucide-react";
+import { Bell, LogOut, Menu } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 
-export default function Navbar({ title = "Dashboard", subtitle = "Welcome back!" }) {
+export default function Navbar({ title = "Dashboard", subtitle = "Welcome back!", toggleMobileSidebar }) {
   const navigate = useNavigate();
 
   const handleLogout = () => {
+    localStorage.removeItem("dayflow_user");
     navigate("/login");
   };
 
   return (
     <header className="topbar">
-      <div className="topbar-left">
-        <h1>{title}</h1>
-        <p>{subtitle}</p>
+      <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+        {toggleMobileSidebar && (
+          <button 
+            type="button" 
+            className="mobile-menu-btn" 
+            onClick={toggleMobileSidebar}
+            aria-label="Toggle navigation"
+          >
+            <Menu size={20} />
+          </button>
+        )}
+        <div className="topbar-left">
+          <h1>{title}</h1>
+          <p>{subtitle}</p>
+        </div>
       </div>
 
       <div className="topbar-right">
