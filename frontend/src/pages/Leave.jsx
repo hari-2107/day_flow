@@ -1,84 +1,144 @@
 import React, { useState } from "react";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
+import { useAuth } from "../context/AuthContext";
+import { CalendarDays, PlusCircle, CheckCircle, Clock, AlertCircle } from "lucide-react";
 
 export default function Leave() {
+  const { user } = useAuth();
+
   const [leaves, setLeaves] = useState([
-    { id: 1, type: "Sick Leave", from: "2026-08-10", to: "2026-08-11", status: "Approved", remarks: "Fever" },
-    { id: 2, type: "Paid Leave", from: "2026-08-28", to: "2026-08-30", status: "Pending", remarks: "Family event" }
+    { id: 1, type: "Casual Leave", from: "2026-08-25", to: "2026-08-26", days: 2, status: "Approved", reason: "Family Event" },
+    { id: 2, type: "Sick Leave", from: "2026-08-10", to: "2026-08-10", days: 1, status: "Approved", reason: "Viral Fever" },
+    { id: 3, type: "Earned Leave", from: "2026-09-15", to: "2026-09-18", days: 4, status: "Pending", reason: "Annual Vacation" },
   ]);
 
-  const [form, setForm] = useState({ type: "Paid Leave", from: "", to: "", remarks: "" });
+  const [formData, setFormData] = useState({
+    type: "Casual Leave",
+    from: "",
+    to: "",
+    reason: ""
+  });
 
-  const handleSubmit = (e) => {
+  const [submitted, setSubmitted] = useState(false);
+
+  const handleApply = (e) => {
     e.preventDefault();
-    setLeaves([...leaves, { ...form, id: Date.now(), status: "Pending" }]);
-    setForm({ type: "Paid Leave", from: "", to: "", remarks: "" });
+    const newReq = {
+      id: Date.now(),
+      type: formData.type,
+      from: formData.from,
+      to: formData.to,
+      days: 2,
+      status: "Pending",
+      reason: formData.reason
+    };
+    setLeaves([newReq, ...leaves]);
+    setSubmitted(true);
+    setFormData({ type: "Casual Leave", from: "", to: "", reason: "" });
+    setTimeout(() => setSubmitted(false), 3000);
   };
 
   return (
     <div className="dashboard-layout">
-      <Sidebar role="Employee" />
+      <Sidebar role={user?.role || "Employee"} user={user || { name: "Adhithya N", role: "Software Engineer" }} />
       <main className="dashboard-main">
-        <Navbar title="Leave Management" subtitle="Apply for time-off and track your approvals" />
+        <Navbar title="Leave & Absence Management" subtitle="Apply for leaves, view balance quotas, and approval statuses" />
 
         <div className="dashboard-content">
-          <div className="leave-balance-grid">
-            <div className="leave-balance">
-              <h4>Paid Leave Balance</h4>
-              <strong>10 Days</strong>
+          {submitted && (
+            <div className="alert alert-success">
+              <CheckCircle size={18} />
+              <span>Leave application submitted to HR Manager for review!</span>
             </div>
-            <div className="leave-balance">
-              <h4>Sick Leave Balance</h4>
-              <strong>4 Days</strong>
+          )}
+
+          {/* Leave Balance Counters */}
+          <div className="stats-grid">
+            <div className="stat-card">
+              <div className="stat-card-top">
+                <span className="stat-card-label">Casual Leaves</span>
+                <div className="stat-icon"><CalendarDays size={20} /></div>
+              </div>
+              <div className="stat-card-value">08 / 12</div>
+              <div className="stat-card-footer">4 Days Utilized</div>
             </div>
-            <div className="leave-balance">
-              <h4>Unpaid Leave Used</h4>
-              <strong>0 Days</strong>
+
+            <div className="stat-card">
+              <div className="stat-card-top">
+                <span className="stat-card-label">Sick Leaves</span>
+                <div className="stat-icon warning"><Clock size={20} /></div>
+              </div>
+              <div className="stat-card-value">09 / 10</div>
+              <div className="stat-card-footer">1 Day Utilized</div>
+            </div>
+
+            <div className="stat-card">
+              <div className="stat-card-top">
+                <span className="stat-card-label">Earned / Privilege</span>
+                <div className="stat-icon success"><CheckCircle size={20} /></div>
+              </div>
+              <div className="stat-card-value">15 / 15</div>
+              <div className="stat-card-footer">Fully Available</div>
+            </div>
+
+            <div className="stat-card">
+              <div className="stat-card-top">
+                <span className="stat-card-label">Unpaid Leave (LWP)</span>
+                <div className="stat-icon danger"><AlertCircle size={20} /></div>
+              </div>
+              <div className="stat-card-value">00 Days</div>
+              <div className="stat-card-footer">Zero loss of pay days</div>
             </div>
           </div>
 
           <div className="content-grid">
+            {/* Apply Leave Form */}
             <div className="card">
               <div className="card-header">
-                <h3>Apply for Leave</h3>
+                <div className="card-header-brand">
+                  <PlusCircle className="section-icon" size={18} />
+                  <h3>Submit New Leave Request</h3>
+                </div>
               </div>
               <div className="card-body">
-                <form className="auth-form" onSubmit={handleSubmit}>
+                <form onSubmit={handleApply}>
                   <div className="form-group">
                     <label className="form-label required">Leave Type</label>
                     <div className="input-wrapper">
                       <select 
-                        value={form.type} 
-                        onChange={(e) => setForm({ ...form, type: e.target.value })}
+                        value={formData.type} 
+                        onChange={(e) => setFormData({ ...formData, type: e.target.value })}
                       >
-                        <option value="Paid Leave">Paid Leave</option>
-                        <option value="Sick Leave">Sick Leave</option>
-                        <option value="Unpaid Leave">Unpaid Leave</option>
+                        <option value="Casual Leave">Casual Leave (CL)</option>
+                        <option value="Sick Leave">Sick Leave (SL)</option>
+                        <option value="Earned Leave">Earned Leave (EL)</option>
+                        <option value="Compensatory Off">Compensatory Off</option>
                       </select>
                     </div>
                   </div>
 
                   <div className="form-row">
                     <div className="form-group">
-                      <label className="form-label required">From Date</label>
+                      <label className="form-label required">Start Date</label>
                       <div className="input-wrapper">
-                        <input 
-                          type="date" 
-                          value={form.from} 
-                          onChange={(e) => setForm({ ...form, from: e.target.value })}
-                          required 
+                        <input
+                          type="date"
+                          value={formData.from}
+                          onChange={(e) => setFormData({ ...formData, from: e.target.value })}
+                          required
                         />
                       </div>
                     </div>
+
                     <div className="form-group">
-                      <label className="form-label required">To Date</label>
+                      <label className="form-label required">End Date</label>
                       <div className="input-wrapper">
-                        <input 
-                          type="date" 
-                          value={form.to} 
-                          onChange={(e) => setForm({ ...form, to: e.target.value })}
-                          required 
+                        <input
+                          type="date"
+                          value={formData.to}
+                          onChange={(e) => setFormData({ ...formData, to: e.target.value })}
+                          required
                         />
                       </div>
                     </div>
@@ -87,41 +147,47 @@ export default function Leave() {
                   <div className="form-group">
                     <label className="form-label required">Reason / Remarks</label>
                     <div className="input-wrapper">
-                      <textarea 
-                        rows="3" 
-                        placeholder="Provide details about your leave..."
-                        value={form.remarks}
-                        onChange={(e) => setForm({ ...form, remarks: e.target.value })}
+                      <textarea
+                        placeholder="State your reason for absence..."
+                        value={formData.reason}
+                        onChange={(e) => setFormData({ ...formData, reason: e.target.value })}
                         required
-                      ></textarea>
+                      />
                     </div>
                   </div>
 
                   <button type="submit" className="btn btn-primary btn-full">
-                    Submit Request
+                    <span>Submit Request</span>
                   </button>
                 </form>
               </div>
             </div>
 
+            {/* Leave History Table */}
             <div className="card">
               <div className="card-header">
-                <h3>My Leave Requests</h3>
+                <div className="card-header-brand">
+                  <CalendarDays className="section-icon" size={18} />
+                  <h3>My Leave History</h3>
+                </div>
               </div>
-              <div className="card-body">
+              <div className="card-body" style={{ padding: 0 }}>
                 <div className="table-container">
                   <table className="data-table">
                     <thead>
                       <tr>
                         <th>Type</th>
-                        <th>Dates</th>
+                        <th>Duration</th>
                         <th>Status</th>
                       </tr>
                     </thead>
                     <tbody>
                       {leaves.map((l) => (
                         <tr key={l.id}>
-                          <td>{l.type}</td>
+                          <td>
+                            <strong>{l.type}</strong>
+                            <div style={{ fontSize: "11px", color: "#64748b" }}>{l.reason}</div>
+                          </td>
                           <td>{l.from} to {l.to}</td>
                           <td>
                             <span className={`status ${l.status === "Approved" ? "status-approved" : "status-pending"}`}>

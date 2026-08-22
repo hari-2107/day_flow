@@ -5,7 +5,7 @@ import {
   UserCheck, 
   CalendarDays, 
   Clock, 
-  DollarSign, 
+  IndianRupee, 
   Users, 
   CheckSquare,
   BarChart3,
@@ -13,35 +13,29 @@ import {
   X
 } from "lucide-react";
 
-export default function Sidebar({ role = "Employee", user = { name: "Alex Morgan", role: "Software Engineer" }, isOpen, onClose }) {
+export default function Sidebar({ role = "Employee", user = { name: "Adhithya N", role: "Software Engineer", avatar: "" }, isOpen, onClose }) {
   const isAdmin = role === "Admin";
 
   return (
     <>
       <div 
         className={`sidebar-overlay ${isOpen ? "show" : ""}`} 
-        onClick={onClose}
+        onClick={onClose} 
       />
 
       <aside className={`sidebar ${isOpen ? "open" : ""}`}>
-        <div className="sidebar-brand" style={{ justifyContent: "space-between" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-            <div className="sidebar-logo">DF</div>
-            <div className="sidebar-brand-name">Day<span>Flow</span></div>
-          </div>
+        <div className="sidebar-brand">
+          <div className="sidebar-logo">DF</div>
+          <div className="sidebar-brand-name">Day<span>Flow</span></div>
           {onClose && (
-            <button 
-              className="mobile-menu-btn" 
-              onClick={onClose} 
-              style={{ border: "none", background: "transparent" }}
-            >
+            <button className="mobile-menu-btn" onClick={onClose} style={{ marginLeft: "auto", border: "none", background: "transparent" }}>
               <X size={20} />
             </button>
           )}
         </div>
 
         <nav className="sidebar-nav">
-          <div className="sidebar-section-title">Main Menu</div>
+          <div className="sidebar-section-title">Main Hub</div>
           
           <NavLink 
             to={isAdmin ? "/admin/dashboard" : "/employee/dashboard"} 
@@ -61,54 +55,62 @@ export default function Sidebar({ role = "Employee", user = { name: "Alex Morgan
               </NavLink>
               <NavLink to="/employee/attendance" className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`} onClick={onClose}>
                 <Clock size={18} />
-                <span>Attendance</span>
+                <span>Attendance Log</span>
               </NavLink>
               <NavLink to="/employee/leave" className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`} onClick={onClose}>
                 <CalendarDays size={18} />
-                <span>Leave Requests</span>
+                <span>Leave Management</span>
               </NavLink>
               <NavLink to="/employee/payroll" className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`} onClick={onClose}>
-                <DollarSign size={18} />
-                <span>My Payroll</span>
+                <IndianRupee size={18} />
+                <span>Payroll & Slips</span>
               </NavLink>
-              <NavLink to="/notifications" className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`} onClick={onClose}>
-                <Bell size={18} />
-                <span>Notifications</span>
-              </NavLink>
+             <NavLink to="/employee/notifications" className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`} onClick={onClose}>
+  <Bell size={18} />
+  <span>Notifications</span>
+</NavLink>
             </>
           ) : (
             <>
               <div className="sidebar-section-title">HR Management</div>
-              <NavLink to="/employees" className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`} onClick={onClose}>
+              <NavLink to="/admin/employees" className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`} onClick={onClose}>
                 <Users size={18} />
-                <span>Employees</span>
+                <span>Employee Directory</span>
               </NavLink>
-              <NavLink to="/employee/attendance" className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`} onClick={onClose}>
+              <NavLink to="/admin/attendance" className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`} onClick={onClose}>
                 <Clock size={18} />
                 <span>All Attendance</span>
               </NavLink>
-              <NavLink to="/employee/leave" className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`} onClick={onClose}>
+              <NavLink to="/admin/leaves" className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`} onClick={onClose}>
                 <CheckSquare size={18} />
                 <span>Leave Approvals</span>
               </NavLink>
-              <NavLink to="/payroll" className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`} onClick={onClose}>
-                <DollarSign size={18} />
+              <NavLink to="/admin/payroll" className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`} onClick={onClose}>
+                <IndianRupee size={18} />
                 <span>Payroll Control</span>
               </NavLink>
-              <NavLink to="/analytics" className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`} onClick={onClose}>
+              <NavLink to="/admin/analytics" className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`} onClick={onClose}>
                 <BarChart3 size={18} />
                 <span>Analytics & Reports</span>
               </NavLink>
+              <NavLink to="/admin/notifications" className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`} onClick={onClose}>
+  <Bell size={18} />
+  <span>Notifications</span>
+</NavLink>
             </>
           )}
         </nav>
 
         <div className="sidebar-user">
           <div className="sidebar-user-content">
-            <div className="avatar">{user.name.charAt(0)}</div>
+            {user?.avatar ? (
+              <img src={user.avatar} alt="User Avatar" className="sidebar-avatar-img" />
+            ) : (
+              <div className="avatar">{user?.name ? user.name.charAt(0) : "A"}</div>
+            )}
             <div className="user-info">
-              <strong>{user.name}</strong>
-              <span>{user.role}</span>
+              <strong>{user?.name || "Adhithya N"}</strong>
+              <span>{user?.role || "Employee"}</span>
             </div>
           </div>
         </div>
