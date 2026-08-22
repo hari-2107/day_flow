@@ -33,7 +33,7 @@ export default function Register() {
         employeeId: formData.employeeId
       });
 
-      
+
       sessionStorage.setItem("pending_verify_email", formData.email);
       navigate("/verify-email");
     } catch (err) {
@@ -49,8 +49,8 @@ export default function Register() {
     <div className="auth-page">
       <div className="auth-container">
         <div className="auth-brand">
-          <div className="auth-logo">DF</div>
-          <h1>Day<span>Flow</span></h1>
+          <div className="auth-logo">WS</div>
+          <h1>Work<span>Sync</span></h1>
           <p>Every workday, perfectly aligned.</p>
         </div>
 

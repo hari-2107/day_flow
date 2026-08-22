@@ -58,8 +58,8 @@ export default function Login() {
     <div className="auth-page">
       <div className="auth-container">
         <div className="auth-brand">
-          <div className="auth-logo">DF</div>
-          <h1>Day<span>Flow</span></h1>
+          <div className="auth-logo">WS</div>
+          <h1>Work<span>Sync</span></h1>
           <p>Enterprise Workforce & Payroll Suite</p>
         </div>
 
@@ -110,7 +110,7 @@ export default function Login() {
                 <input
                   type="email"
                   name="email"
-                  placeholder={activeTab === "Admin" ? "admin@dayflow.io" : "alex.morgan@dayflow.io"}
+                  placeholder={activeTab === "Admin" ? "[EMAIL_ADDRESS]" : "[EMAIL_ADDRESS]"}
                   value={formData.email}
                   onChange={handleChange}
                   required

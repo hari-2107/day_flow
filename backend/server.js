@@ -46,43 +46,43 @@ const seedInitialData = async () => {
       const admin = await User.create({
         employee_id: 'EMP-ADMIN-01',
         name: 'HR Admin Officer',
-        email: 'admin@dayflow.io',
+        email: 'admin@worksync.io',
         password: adminPassword,
         role: 'ADMIN',
         department: 'Human Resources',
         designation: 'HR Officer',
         phone: '+1 (555) 000-1122',
         address: '100 Corporate Plaza, Executive Suite',
-        salary: '$8,500'
+        salary: '₹1,85,000'
       });
 
       const emp1 = await User.create({
         employee_id: 'EMP-1042',
         name: 'Alex Morgan',
-        email: 'alex.morgan@dayflow.io',
+        email: 'alex.morgan@worksync.io',
         password: empPassword,
         role: 'EMPLOYEE',
         department: 'Engineering',
         designation: 'Frontend Engineer',
         phone: '+1 (555) 234-5678',
         address: '742 Evergreen Terrace, Springfield',
-        salary: '$5,200'
+        salary: '₹84,800'
       });
 
       const emp2 = await User.create({
         employee_id: 'EMP-1043',
         name: 'Sarah Connor',
-        email: 'sarah.connor@dayflow.io',
+        email: 'sarah.connor@worksync.io',
         password: empPassword,
         role: 'EMPLOYEE',
         department: 'Design',
         designation: 'UI/UX Designer',
         phone: '+1 (555) 987-6543',
         address: '88 Cyberdyne Way',
-        salary: '$4,800'
+        salary: '₹76,500'
       });
 
-      
+
       await Attendance.create({
         user_id: emp1.id,
         employee_id: emp1.employee_id,
@@ -94,7 +94,7 @@ const seedInitialData = async () => {
         status: 'Present'
       });
 
-      
+
       await Leave.create({
         user_id: emp1.id,
         employee_id: emp1.employee_id,
@@ -107,22 +107,22 @@ const seedInitialData = async () => {
         admin_comments: 'Get well soon!'
       });
 
-      
+
       await Payroll.create({
         user_id: emp1.id,
         employee_id: emp1.employee_id,
         user_name: emp1.name,
         month: 'July 2026',
         issued_date: '2026-07-31',
-        basic_pay: '$3,200.00',
-        hra: '$1,200.00',
-        medical_allowance: '$400.00',
-        special_allowance: '$400.00',
-        tax_deduction: '$650.00',
-        health_insurance: '$200.00',
-        pf: '$100.00',
-        gross_salary: '$5,200.00',
-        net_salary: '$4,250.00'
+        basic_pay: '₹48,000.00',
+        hra: '₹24,000.00',
+        medical_allowance: '₹5,000.00',
+        special_allowance: '₹15,000.00',
+        tax_deduction: '₹3,200.00',
+        health_insurance: '₹200.00',
+        pf: '₹3,800.00',
+        gross_salary: '₹92,000.00',
+        net_salary: '₹84,800.00'
       });
 
       console.log('✅ Demo users and initial records seeded successfully.');
@@ -139,7 +139,7 @@ sequelize.sync()
   .then(async () => {
     console.log('✅ Database connected and models synchronized');
     await seedInitialData();
-    app.listen(PORT, () => console.log(`🚀 Dayflow Backend Server running on http://localhost:${PORT}`));
+    app.listen(PORT, () => console.log(`🚀 worksync Backend Server running on http://localhost:${PORT}`));
   })
   .catch((err) => {
     console.error('❌ Database connection failed:', err.message);

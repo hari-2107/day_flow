@@ -17,7 +17,7 @@ export default function Payroll() {
   const [errorMsg, setErrorMsg] = useState("");
   const [bannerNotice, setBannerNotice] = useState("");
 
-  
+
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [updating, setUpdating] = useState(false);
@@ -94,7 +94,7 @@ export default function Payroll() {
     }
   };
 
-  
+
   const triggerDownload = (filename, content) => {
     const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
     const url = URL.createObjectURL(blob);
@@ -107,11 +107,11 @@ export default function Payroll() {
     URL.revokeObjectURL(url);
   };
 
-  
+
   const handleDownloadStatement = () => {
     const listToExport = payrollsList.length > 0 ? payrollsList : fallbackPayslips;
     const statementContent = `=====================================================
-DAYFLOW HRMS - CONSOLIDATED ANNUAL SALARY STATEMENT
+worksync HRMS - CONSOLIDATED ANNUAL SALARY STATEMENT
 =====================================================
 Employee Name : ${user?.name || "Adhithya N"}
 Employee ID   : ${user?.employeeId || "EMP-1042"}
@@ -127,7 +127,7 @@ ${listToExport.map(s => `${(s.month || "Current Month").padEnd(14)} | Date: ${s.
 Total Net Credited (YTD) : ₹3,35,600.00
 Status                   : Fully Reconciled & Disbursed
 =====================================================
-Generated electronically by DayFlow HRMS Enterprise Engine.
+Generated electronically by worksync HRMS Enterprise Engine.
 `;
 
     triggerDownload(`Salary_Statement_${user?.employeeId || "EMP-1042"}.txt`, statementContent);
@@ -135,7 +135,7 @@ Generated electronically by DayFlow HRMS Enterprise Engine.
     setTimeout(() => setDownloadSuccess(""), 3500);
   };
 
-  
+
   const handleDownloadSlip = (slip) => {
     const monthName = slip?.month || "August 2026";
     const dateStr = slip?.date || slip?.issued_date || "31 Aug 2026";
@@ -145,7 +145,7 @@ Generated electronically by DayFlow HRMS Enterprise Engine.
     const statusVal = slip?.status || "Paid";
 
     const payslipContent = `=====================================================
-DAYFLOW HRMS - MONTHLY SALARY PAYSLIP
+worksync HRMS - MONTHLY SALARY PAYSLIP
 =====================================================
 Pay Period    : ${monthName}
 Payment Date  : ${dateStr}
@@ -203,7 +203,7 @@ This is a computer-generated salary advice and requires no signature.
             </div>
           )}
 
-          {}
+          { }
           <div className="salary-card-inr">
             <div className="salary-card-top">
               <div>
@@ -232,8 +232,8 @@ This is a computer-generated salary advice and requires no signature.
             </div>
             <div className="salary-card-footer">
               <span>Next Disbursement: <strong>31 August 2026</strong></span>
-              <button 
-                type="button" 
+              <button
+                type="button"
                 className="btn btn-white-glass"
                 onClick={handleDownloadStatement}
               >
@@ -243,7 +243,7 @@ This is a computer-generated salary advice and requires no signature.
             </div>
           </div>
 
-          {}
+          { }
           {!isAdmin && (
             <div className="grid-2-col" style={{ marginBottom: "24px" }}>
               <div className="card">
@@ -304,7 +304,7 @@ This is a computer-generated salary advice and requires no signature.
             </div>
           )}
 
-          {}
+          { }
           <div className="card">
             <div className="card-header">
               <h3>{isAdmin ? "Employee Payroll Records" : "Payslip History"}</h3>
@@ -345,10 +345,10 @@ This is a computer-generated salary advice and requires no signature.
                                   <Edit3 size={14} /> Adjust Payroll
                                 </button>
                               ) : (
-                                <button 
+                                <button
                                   type="button"
-                                  className="btn btn-outline" 
-                                  style={{ minHeight: "32px", padding: "4px 10px", fontSize: "12px" }} 
+                                  className="btn btn-outline"
+                                  style={{ minHeight: "32px", padding: "4px 10px", fontSize: "12px" }}
                                   onClick={() => handleDownloadSlip(slip)}
                                 >
                                   <Download size={14} /> PDF Slip
@@ -373,7 +373,7 @@ This is a computer-generated salary advice and requires no signature.
         </div>
       </main>
 
-      {}
+      { }
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

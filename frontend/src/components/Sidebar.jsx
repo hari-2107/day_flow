@@ -29,8 +29,8 @@ export default function Sidebar({ role, user: userProp, isOpen, onClose }) {
 
       <aside className={`sidebar ${isOpen ? "open" : ""}`}>
         <div className="sidebar-brand">
-          <div className="sidebar-logo">DF</div>
-          <div className="sidebar-brand-name">Day<span>Flow</span></div>
+          <div className="sidebar-logo">WS</div>
+          <div className="sidebar-brand-name">Work<span>Sync</span></div>
           {onClose && (
             <button className="mobile-menu-btn" onClick={onClose} style={{ marginLeft: "auto", border: "none", background: "transparent" }}>
               <X size={20} />

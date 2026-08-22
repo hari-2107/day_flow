@@ -31,8 +31,8 @@ export default function VerifyEmail() {
       const email = sessionStorage.getItem("pending_verify_email") || "";
       const fullCode = code.join("");
       await authService.verifyEmail(fullCode, email);
-      
-      
+
+
       navigate("/login", {
         state: { notice: "Email verified successfully! Please sign in to access your workspace." }
       });
@@ -53,8 +53,8 @@ export default function VerifyEmail() {
     <div className="auth-page">
       <div className="auth-container">
         <div className="auth-brand">
-          <div className="auth-logo">DF</div>
-          <h1>Day<span>Flow</span></h1>
+          <div className="auth-logo">WS</div>
+          <h1>Work<span>Sync</span></h1>
           <p>Enterprise Workforce & Payroll Suite</p>
         </div>
 
@@ -112,9 +112,9 @@ export default function VerifyEmail() {
 
             <div className="auth-footer" style={{ marginTop: "20px" }}>
               Didn't receive code?{" "}
-              <button 
-                type="button" 
-                className="resend-link" 
+              <button
+                type="button"
+                className="resend-link"
                 onClick={handleResendCode}
                 style={{ border: "none", background: "none", color: "#4338ca", cursor: "pointer", fontWeight: 600, textDecoration: "underline" }}
               >
