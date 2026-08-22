@@ -16,20 +16,20 @@
 
 <br><br>
 
-> **Dayflow transforms everyday HR operations into one intelligent, connected workspace.**
+> **Worksync transforms everyday HR operations into one intelligent, connected workspace.**
 
 </div>
 
 ---
 
-## 🌌 WHAT IS DAYFLOW?
+## 🌌 WHAT IS Worksync?
 
-**Dayflow** is a modern Human Resource Management System designed to digitize and streamline essential HR operations.
+**Worksync** is a modern Human Resource Management System designed to digitize and streamline essential HR operations.
 
 From employee profiles and attendance to leave management, payroll visibility, notifications, and HR analytics — everything is designed to work together inside one unified platform.
 
 ```text
-                         ⚡ DAYFLOW
+                         ⚡ WORKSYNC
                              │
              ┌───────────────┼───────────────┐
              │               │               │
@@ -152,7 +152,7 @@ From employee profiles and attendance to leave management, payroll visibility, n
 
 ```text
                            ┌─────────────────────┐
-                           │      DAYFLOW        │
+                           │      WORKSYNC       │
                            │       HRMS          │
                            └──────────┬──────────┘
                                       │
@@ -294,7 +294,7 @@ day_flow/
 
 # ▶️ HOW TO RUN THE WEBSITE
 
-Dayflow is implemented using separate **Frontend**, **Backend**, and **Database** components.
+Worksync is implemented using separate **Frontend**, **Backend**, and **Database** components.
 
 The frontend and backend are maintained in separate folders, while the database is maintained as a separate component.
 
@@ -629,7 +629,7 @@ Security considerations include:
 
 # 🔮 FUTURE VISION
 
-Dayflow is designed to grow beyond the core HRMS functionality.
+Worksync is designed to grow beyond the core HRMS functionality.
 
 ```text
                     DAYFLOW
@@ -653,7 +653,7 @@ Dayflow is designed to grow beyond the core HRMS functionality.
 
 <div align="center">
 
-### ⚡ DAYFLOW
+### ⚡ WORKSYNC
 
 **Human Resource Management System**
 
