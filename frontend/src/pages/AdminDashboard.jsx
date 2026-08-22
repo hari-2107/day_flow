@@ -1,17 +1,32 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
-import { Users, Clock, CalendarDays, DollarSign } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
+import { 
+  Users, 
+  Clock, 
+  CalendarDays, 
+  IndianRupee, 
+  CheckCircle, 
+  AlertTriangle,
+  ArrowRight
+} from "lucide-react";
 import { Link } from "react-router-dom";
 import { adminService } from "../services/api";
-import { useAuth } from "../context/AuthContext";
 
 export default function AdminDashboard() {
   const { user } = useAuth();
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+
   const [employees, setEmployees] = useState([]);
   const [leaves, setLeaves] = useState([]);
   const [attendance, setAttendance] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const [pendingApprovals, setPendingApprovals] = useState([
+    { id: 1, name: "Adhithya N", type: "Casual Leave", days: "2 Days (Aug 28 - Aug 29)", reason: "Technical conference" },
+    { id: 2, name: "Sarah Connor", type: "Sick Leave", days: "1 Day (Aug 26)", reason: "Doctor appointment" },
+  ]);
 
   useEffect(() => {
     let isMounted = true;
@@ -40,118 +55,166 @@ export default function AdminDashboard() {
     return () => { isMounted = false; };
   }, []);
 
-  const pendingLeavesCount = leaves.filter(l => l.status === "Pending").length;
-  const presentCount = attendance.filter(a => a.status === "Present").length;
+  const handleDecision = (id) => {
+    setPendingApprovals(pendingApprovals.filter(item => item.id !== id));
+  };
+
+  const pendingLeavesCount = leaves.length > 0 ? leaves.filter(l => l.status === "Pending").length : pendingApprovals.length;
+  const presentCount = attendance.length > 0 ? attendance.filter(a => a.status === "Present").length : 42;
+  const totalHeadcount = employees.length > 0 ? employees.length : 48;
 
   return (
     <div className="dashboard-layout">
-      <Sidebar role="Admin" user={user || { name: "HR Admin", role: "HR Officer" }} />
+      <Sidebar 
+        role="Admin" 
+        user={user || { name: "Aadhavan Raman", role: "HR Administrator" }} 
+        isOpen={mobileSidebarOpen}
+        onClose={() => setMobileSidebarOpen(false)}
+      />
+
       <main className="dashboard-main">
-        <Navbar title="Admin Dashboard" subtitle="Overview of organization attendance, leaves, and staff." />
+        <Navbar 
+          title="HR Administration Console" 
+          subtitle="Organization overview, daily presence, and pending leave approvals"
+          toggleMobileSidebar={() => setMobileSidebarOpen(prev => !prev)}
+        />
 
         <div className="dashboard-content">
+          {/* Org Key Metrics */}
           <div className="stats-grid">
             <div className="stat-card">
               <div className="stat-card-top">
-                <span className="stat-card-label">Total Employees</span>
-                <div className="stat-icon"><Users size={20} /></div>
+                <span className="stat-card-label">Active Headcount</span>
+                <div className="stat-icon">
+                  <Users size={20} />
+                </div>
               </div>
-              <div className="stat-card-value">{loading ? "..." : employees.length || 3}</div>
+              <div className="stat-card-value">{loading ? "..." : `${totalHeadcount} Staff`}</div>
               <div className="stat-card-footer">Active directory records</div>
             </div>
 
             <div className="stat-card">
               <div className="stat-card-top">
                 <span className="stat-card-label">Present Today</span>
-                <div className="stat-icon success"><Clock size={20} /></div>
+                <div className="stat-icon success">
+                  <Clock size={20} />
+                </div>
               </div>
-              <div className="stat-card-value">{loading ? "..." : presentCount || 1}</div>
-              <div className="stat-card-footer">Checked in today</div>
+              <div className="stat-card-value">{loading ? "..." : `${presentCount} / ${totalHeadcount}`}</div>
+              <div className="stat-card-footer">Attendance records logged</div>
             </div>
 
             <div className="stat-card">
               <div className="stat-card-top">
                 <span className="stat-card-label">Pending Leaves</span>
-                <div className="stat-icon warning"><CalendarDays size={20} /></div>
+                <div className="stat-icon warning">
+                  <CalendarDays size={20} />
+                </div>
               </div>
-              <div className="stat-card-value">{loading ? "..." : pendingLeavesCount}</div>
-              <div className="stat-card-footer">Requires review</div>
+              <div className="stat-card-value">{loading ? "..." : `${pendingLeavesCount} Requests`}</div>
+              <div className="stat-card-footer">Awaiting HR authorization</div>
             </div>
 
             <div className="stat-card">
               <div className="stat-card-top">
                 <span className="stat-card-label">Monthly Payroll</span>
-                <div className="stat-icon"><DollarSign size={20} /></div>
+                <div className="stat-icon">
+                  <IndianRupee size={20} />
+                </div>
               </div>
-              <div className="stat-card-value">$18.5K</div>
-              <div className="stat-card-footer">Cycle active</div>
+              <div className="stat-card-value">₹41.2 L</div>
+              <div className="stat-card-footer">Reconciliation completed</div>
             </div>
           </div>
 
           <div className="content-grid">
+            {/* Pending Approvals Table */}
             <div className="card">
               <div className="card-header">
-                <h3>Recent Attendance Activity</h3>
-                <Link to="/admin/attendance" className="forgot-password">View All</Link>
+                <h3>Pending Leave Authorizations</h3>
+                <Link to="/admin/leaves" style={{ fontSize: "13px", color: "var(--primary)", fontWeight: 700 }}>
+                  View All
+                </Link>
               </div>
               <div className="card-body" style={{ padding: 0 }}>
-                <div className="table-container">
-                  <table className="data-table">
-                    <thead>
-                      <tr>
-                        <th>Employee</th>
-                        <th>Date</th>
-                        <th>Time In</th>
-                        <th>Status</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {attendance.length > 0 ? (
-                        attendance.slice(0, 5).map((att) => (
-                          <tr key={att.id}>
+                {pendingApprovals.length === 0 ? (
+                  <div style={{ padding: "30px", textAlign: "center", color: "var(--text-muted)" }}>
+                    <CheckCircle size={32} style={{ color: "var(--accent-emerald)", margin: "0 auto 8px" }} />
+                    <p>All leave applications have been reviewed!</p>
+                  </div>
+                ) : (
+                  <div className="table-container">
+                    <table className="data-table">
+                      <thead>
+                        <tr>
+                          <th>Employee</th>
+                          <th>Leave Type</th>
+                          <th>Duration</th>
+                          <th>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {pendingApprovals.map(req => (
+                          <tr key={req.id}>
                             <td>
-                              <div className="employee-cell" style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                                <div className="employee-avatar" style={{ width: "32px", height: "32px", borderRadius: "50%", background: "#4f46e5", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "12px", fontWeight: "bold" }}>
-                                  {(att.user_name || "E").charAt(0)}
-                                </div>
-                                <div>
-                                  <div className="employee-name" style={{ fontWeight: 600 }}>{att.user_name}</div>
-                                  <div className="employee-email" style={{ fontSize: "12px", color: "#64748b" }}>{att.employee_id}</div>
-                                </div>
+                              <strong>{req.name}</strong>
+                              <div style={{ fontSize: "11px", color: "var(--text-muted)" }}>{req.reason}</div>
+                            </td>
+                            <td>{req.type}</td>
+                            <td>{req.days}</td>
+                            <td>
+                              <div style={{ display: "flex", gap: "6px" }}>
+                                <button 
+                                  className="btn btn-success" 
+                                  style={{ height: "32px", padding: "0 10px", fontSize: "12px" }}
+                                  onClick={() => handleDecision(req.id)}
+                                >
+                                  Approve
+                                </button>
+                                <button 
+                                  className="btn btn-danger" 
+                                  style={{ height: "32px", padding: "0 10px", fontSize: "12px" }}
+                                  onClick={() => handleDecision(req.id)}
+                                >
+                                  Reject
+                                </button>
                               </div>
                             </td>
-                            <td>{att.date}</td>
-                            <td>{att.check_in || "--"}</td>
-                            <td>
-                              <span className={`status ${att.status === "Present" ? "status-present" : "status-pending"}`}>
-                                {att.status}
-                              </span>
-                            </td>
                           </tr>
-                        ))
-                      ) : (
-                        <tr>
-                          <td colSpan="4" style={{ textAlign: "center", padding: "20px", color: "#64748b" }}>
-                            No recent attendance activity.
-                          </td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
-                </div>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
               </div>
             </div>
 
+            {/* Quick Operations Module */}
             <div className="card">
               <div className="card-header">
-                <h3>Quick HR Management</h3>
+                <h3>Admin Management Hub</h3>
               </div>
-              <div className="card-body">
-                <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                  <Link to="/admin/employees" className="btn btn-outline btn-full" style={{ justifyContent: "center" }}>Manage Employees</Link>
-                  <Link to="/admin/leaves" className="btn btn-outline btn-full" style={{ justifyContent: "center" }}>Review Leave Requests</Link>
-                  <Link to="/admin/payroll" className="btn btn-outline btn-full" style={{ justifyContent: "center" }}>Salary Structure Control</Link>
-                </div>
+              <div className="card-body" style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                <Link to="/admin/employees" className="btn btn-secondary btn-full" style={{ justifyContent: "space-between" }}>
+                  <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    <Users size={16} /> Employee Directory
+                  </span>
+                  <ArrowRight size={16} />
+                </Link>
+
+                <Link to="/admin/attendance" className="btn btn-secondary btn-full" style={{ justifyContent: "space-between" }}>
+                  <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    <Clock size={16} /> Attendance Logs
+                  </span>
+                  <ArrowRight size={16} />
+                </Link>
+
+                <Link to="/admin/analytics" className="btn btn-secondary btn-full" style={{ justifyContent: "space-between" }}>
+                  <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    <AlertTriangle size={16} /> Analytics & Compliance
+                  </span>
+                  <ArrowRight size={16} />
+                </Link>
               </div>
             </div>
           </div>

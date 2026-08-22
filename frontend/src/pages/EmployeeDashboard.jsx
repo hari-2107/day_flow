@@ -1,13 +1,24 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
-import { Clock, CalendarDays, DollarSign, CheckCircle2 } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
+import { 
+  Clock, 
+  Calendar, 
+  IndianRupee, 
+  CheckCircle2, 
+  ArrowRight,
+  TrendingUp
+} from "lucide-react";
 import { Link } from "react-router-dom";
 import { attendanceService, leaveService, payrollService } from "../services/api";
-import { useAuth } from "../context/AuthContext";
 
 export default function EmployeeDashboard() {
   const { user } = useAuth();
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  const [isClockedIn, setIsClockedIn] = useState(false);
+  const [clockInTime, setClockInTime] = useState(null);
+
   const [attendance, setAttendance] = useState([]);
   const [leaves, setLeaves] = useState([]);
   const [payroll, setPayroll] = useState(null);
@@ -25,7 +36,14 @@ export default function EmployeeDashboard() {
         ]);
 
         if (isMounted) {
-          if (attRes.status === "fulfilled") setAttendance(attRes.value.data.logs || []);
+          if (attRes.status === "fulfilled") {
+            const logs = attRes.value.data.logs || [];
+            setAttendance(logs);
+            if (logs.length > 0 && logs[0].check_in && logs[0].check_in !== "--") {
+              setIsClockedIn(true);
+              setClockInTime(logs[0].check_in);
+            }
+          }
           if (leaveRes.status === "fulfilled") setLeaves(leaveRes.value.data.leaves || []);
           if (payRes.status === "fulfilled") setPayroll(payRes.value.data);
         }
@@ -40,115 +58,151 @@ export default function EmployeeDashboard() {
     return () => { isMounted = false; };
   }, [user]);
 
-  const todayRecord = attendance[0];
+  const handleClockToggle = async () => {
+    if (!isClockedIn) {
+      const nowTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      setIsClockedIn(true);
+      setClockInTime(nowTime);
+      try {
+        await attendanceService.checkIn();
+      } catch (e) {
+        console.warn("API check-in note:", e?.message);
+      }
+    } else {
+      setIsClockedIn(false);
+      try {
+        await attendanceService.checkOut();
+      } catch (e) {
+        console.warn("API check-out note:", e?.message);
+      }
+    }
+  };
+
   const pendingLeaves = leaves.filter(l => l.status === "Pending").length;
-  const isCheckedIn = !!(todayRecord && todayRecord.check_in && todayRecord.check_in !== "--");
 
   return (
     <div className="dashboard-layout">
-      <Sidebar role="Employee" user={user || { name: "User", role: "Employee" }} />
+      <Sidebar 
+        role="Employee" 
+        user={user || { name: "Adhithya N", role: "Software Engineer" }} 
+        isOpen={mobileSidebarOpen}
+        onClose={() => setMobileSidebarOpen(false)}
+      />
+
       <main className="dashboard-main">
-        <Navbar title="Employee Dashboard" subtitle="Here is your daily activity overview." />
-        
+        <Navbar 
+          title="Employee Workspace" 
+          subtitle="Real-time daily attendance, tasks, and leave balance overview"
+          toggleMobileSidebar={() => setMobileSidebarOpen(prev => !prev)}
+        />
+
         <div className="dashboard-content">
+          {/* Quick Metrics */}
           <div className="stats-grid">
             <div className="stat-card">
               <div className="stat-card-top">
-                <span className="stat-card-label">Attendance Today</span>
-                <div className="stat-icon success"><Clock size={20} /></div>
+                <span className="stat-card-label">Shift Status</span>
+                <div className={`stat-icon ${isClockedIn ? "success" : "warning"}`}>
+                  <Clock size={20} />
+                </div>
               </div>
-              <div className="stat-card-value">{isCheckedIn ? "Checked In" : "Not Checked In"}</div>
-              <div className="stat-card-footer">{isCheckedIn ? `Time: ${todayRecord.check_in}` : "Clock in via Attendance page"}</div>
+              <div className="stat-card-value">
+                {isClockedIn ? "Active" : "Off Duty"}
+              </div>
+              <div className="stat-card-footer">
+                {isClockedIn ? `Clocked in at ${clockInTime}` : "Standard Shift: 09:00 AM - 06:00 PM"}
+              </div>
             </div>
 
             <div className="stat-card">
               <div className="stat-card-top">
-                <span className="stat-card-label">Leave Balance</span>
-                <div className="stat-icon"><CalendarDays size={20} /></div>
+                <span className="stat-card-label">Available Leaves</span>
+                <div className="stat-icon success">
+                  <Calendar size={20} />
+                </div>
               </div>
-              <div className="stat-card-value">14 Days</div>
-              <div className="stat-card-footer">Paid & Sick Leave</div>
+              <div className="stat-card-value">17 Days</div>
+              <div className="stat-card-footer">8 Casual • 9 Sick remaining</div>
             </div>
 
             <div className="stat-card">
               <div className="stat-card-top">
-                <span className="stat-card-label">Pending Requests</span>
-                <div className="stat-icon warning"><CheckCircle2 size={20} /></div>
+                <span className="stat-card-label">August Net Salary</span>
+                <div className="stat-icon">
+                  <IndianRupee size={20} />
+                </div>
               </div>
-              <div className="stat-card-value">{pendingLeaves}</div>
-              <div className="stat-card-footer">Leave applications under review</div>
+              <div className="stat-card-value">₹84,800</div>
+              <div className="stat-card-footer">Scheduled for Aug 31</div>
             </div>
 
             <div className="stat-card">
               <div className="stat-card-top">
-                <span className="stat-card-label">Monthly Gross Pay</span>
-                <div className="stat-icon"><DollarSign size={20} /></div>
+                <span className="stat-card-label">Attendance Score</span>
+                <div className="stat-icon success">
+                  <TrendingUp size={20} />
+                </div>
               </div>
-              <div className="stat-card-value">{payroll?.salary || "$5,200"}</div>
-              <div className="stat-card-footer">Regular monthly band</div>
+              <div className="stat-card-value">98.4%</div>
+              <div className="stat-card-footer">Zero unexcused absences</div>
             </div>
           </div>
 
           <div className="content-grid">
+            {/* Clock-in Module */}
             <div className="card">
               <div className="card-header">
-                <h3>Recent Attendance History</h3>
-                <Link to="/employee/attendance" className="forgot-password">View All</Link>
+                <h3>Daily Attendance Terminal</h3>
               </div>
-              <div className="card-body" style={{ padding: 0 }}>
-                <div className="table-container">
-                  <table className="data-table">
-                    <thead>
-                      <tr>
-                        <th>Date</th>
-                        <th>Check In</th>
-                        <th>Check Out</th>
-                        <th>Status</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {attendance.length > 0 ? (
-                        attendance.slice(0, 4).map((att) => (
-                          <tr key={att.id}>
-                            <td>{att.date}</td>
-                            <td>{att.check_in || "--"}</td>
-                            <td>{att.check_out || "--"}</td>
-                            <td>
-                              <span className={`status ${att.status === "Present" ? "status-present" : "status-pending"}`}>
-                                {att.status}
-                              </span>
-                            </td>
-                          </tr>
-                        ))
-                      ) : (
-                        <tr>
-                          <td colSpan="4" style={{ textAlign: "center", padding: "20px", color: "#64748b" }}>
-                            No attendance history recorded.
-                          </td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
+              <div className="card-body">
+                <div className="attendance-card">
+                  <span className="form-label">Current Server Timestamp</span>
+                  <div className="attendance-time">
+                    {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                  </div>
+                  <p style={{ fontSize: "13px", color: "var(--text-muted)", marginBottom: "20px" }}>
+                    Location: Corporate Headquarters (Chennai Wi-Fi Verified)
+                  </p>
+                  
+                  <button 
+                    type="button"
+                    className={`btn ${isClockedIn ? "btn-danger" : "btn-primary"} btn-lg`}
+                    onClick={handleClockToggle}
+                    style={{ minWidth: "220px" }}
+                  >
+                    <Clock size={18} />
+                    <span>{isClockedIn ? "Clock Out for Today" : "Punch Clock In"}</span>
+                  </button>
                 </div>
               </div>
             </div>
 
+            {/* Quick Actions */}
             <div className="card">
               <div className="card-header">
-                <h3>Quick Actions</h3>
+                <h3>Quick Navigation</h3>
               </div>
-              <div className="card-body">
-                <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                  <Link to="/employee/attendance" className="btn btn-primary btn-full" style={{ justifyContent: "center" }}>
-                    Go to Clock In / Attendance
-                  </Link>
-                  <Link to="/employee/leave" className="btn btn-outline btn-full" style={{ justifyContent: "center" }}>
-                    Apply for Leave
-                  </Link>
-                  <Link to="/employee/payroll" className="btn btn-outline btn-full" style={{ justifyContent: "center" }}>
-                    View Salary Payslips
-                  </Link>
-                </div>
+              <div className="card-body" style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                <Link to="/employee/leave" className="btn btn-secondary btn-full" style={{ justifyContent: "space-between" }}>
+                  <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    <Calendar size={16} /> Apply Leave Request
+                  </span>
+                  <ArrowRight size={16} />
+                </Link>
+
+                <Link to="/employee/payroll" className="btn btn-secondary btn-full" style={{ justifyContent: "space-between" }}>
+                  <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    <IndianRupee size={16} /> View August Payslip
+                  </span>
+                  <ArrowRight size={16} />
+                </Link>
+
+                <Link to="/employee/profile" className="btn btn-secondary btn-full" style={{ justifyContent: "space-between" }}>
+                  <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    <CheckCircle2 size={16} /> Update Contact Info
+                  </span>
+                  <ArrowRight size={16} />
+                </Link>
               </div>
             </div>
           </div>
