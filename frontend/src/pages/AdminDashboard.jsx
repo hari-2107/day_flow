@@ -1,131 +1,184 @@
-import React from "react";
+import React, { useState } from "react";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
-import { Users, Clock, CalendarDays, DollarSign } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
+import { 
+  Users, 
+  Clock, 
+  CalendarDays, 
+  IndianRupee, 
+  CheckCircle, 
+  XCircle,
+  AlertTriangle,
+  ArrowRight
+} from "lucide-react";
 import { Link } from "react-router-dom";
 
 export default function AdminDashboard() {
+  const { user } = useAuth();
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+
+  const [pendingApprovals, setPendingApprovals] = useState([
+    { id: 1, name: "Adhithya N", type: "Casual Leave", days: "2 Days (Aug 28 - Aug 29)", reason: "Technical conference" },
+    { id: 2, name: "Sarah Connor", type: "Sick Leave", days: "1 Day (Aug 26)", reason: "Doctor appointment" },
+  ]);
+
+  const handleDecision = (id) => {
+    setPendingApprovals(pendingApprovals.filter(item => item.id !== id));
+  };
+
   return (
     <div className="dashboard-layout">
-      <Sidebar role="Admin" user={{ name: "HR Admin", role: "HR Officer" }} />
+      <Sidebar 
+        role="Admin" 
+        user={user || { name: "Aadhavan Raman", role: "HR Administrator" }} 
+        isOpen={mobileSidebarOpen}
+        onClose={() => setMobileSidebarOpen(false)}
+      />
+
       <main className="dashboard-main">
-        <Navbar title="Admin Dashboard" subtitle="Overview of organization attendance, leaves, and staff." />
+        <Navbar 
+          title="HR Administration Console" 
+          subtitle="Organization overview, daily presence, and pending leave approvals"
+          toggleMobileSidebar={() => setMobileSidebarOpen(prev => !prev)}
+        />
 
         <div className="dashboard-content">
+          {/* Org Key Metrics */}
           <div className="stats-grid">
             <div className="stat-card">
               <div className="stat-card-top">
-                <span className="stat-card-label">Total Employees</span>
-                <div className="stat-icon"><Users size={20} /></div>
+                <span className="stat-card-label">Active Headcount</span>
+                <div className="stat-icon">
+                  <Users size={20} />
+                </div>
               </div>
-              <div className="stat-card-value">148</div>
-              <div className="stat-card-footer">Across 6 departments</div>
+              <div className="stat-card-value">48 Staff</div>
+              <div className="stat-card-footer">4 Departments Active</div>
             </div>
 
             <div className="stat-card">
               <div className="stat-card-top">
                 <span className="stat-card-label">Present Today</span>
-                <div className="stat-icon success"><Clock size={20} /></div>
+                <div className="stat-icon success">
+                  <Clock size={20} />
+                </div>
               </div>
-              <div className="stat-card-value">132</div>
-              <div className="stat-card-footer">89.2% attendance rate</div>
+              <div className="stat-card-value">42 / 48</div>
+              <div className="stat-card-footer">87.5% attendance rate</div>
             </div>
 
             <div className="stat-card">
               <div className="stat-card-top">
                 <span className="stat-card-label">Pending Leaves</span>
-                <div className="stat-icon warning"><CalendarDays size={20} /></div>
+                <div className="stat-icon warning">
+                  <CalendarDays size={20} />
+                </div>
               </div>
-              <div className="stat-card-value">7</div>
-              <div className="stat-card-footer">Requires review</div>
+              <div className="stat-card-value">{pendingApprovals.length} Requests</div>
+              <div className="stat-card-footer">Awaiting HR authorization</div>
             </div>
 
             <div className="stat-card">
               <div className="stat-card-top">
                 <span className="stat-card-label">Monthly Payroll</span>
-                <div className="stat-icon"><DollarSign size={20} /></div>
+                <div className="stat-icon">
+                  <IndianRupee size={20} />
+                </div>
               </div>
-              <div className="stat-card-value">$248.5K</div>
-              <div className="stat-card-footer">Cycle ending soon</div>
+              <div className="stat-card-value">₹41.2 L</div>
+              <div className="stat-card-footer">Reconciliation completed</div>
             </div>
           </div>
 
           <div className="content-grid">
+            {/* Pending Approvals Table */}
             <div className="card">
               <div className="card-header">
-                <h3>Recent Attendance Activity</h3>
-                <Link to="/employee/attendance" className="forgot-password">View All</Link>
+                <h3>Pending Leave Authorizations</h3>
+                <Link to="/admin/leaves" style={{ fontSize: "13px", color: "var(--primary)", fontWeight: 700 }}>
+                  View All
+                </Link>
               </div>
-              <div className="card-body">
-                <div className="table-container">
-                  <table className="data-table">
-                    <thead>
-                      <tr>
-                        <th>Employee</th>
-                        <th>Department</th>
-                        <th>Time In</th>
-                        <th>Status</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td>
-                          <div className="employee-cell">
-                            <div className="employee-avatar">JD</div>
-                            <div>
-                              <div className="employee-name">John Doe</div>
-                              <div className="employee-email">EMP-1042</div>
-                            </div>
-                          </div>
-                        </td>
-                        <td>Engineering</td>
-                        <td>08:55 AM</td>
-                        <td><span className="status status-present">Present</span></td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <div className="employee-cell">
-                            <div className="employee-avatar">SC</div>
-                            <div>
-                              <div className="employee-name">Sarah Connor</div>
-                              <div className="employee-email">EMP-1043</div>
-                            </div>
-                          </div>
-                        </td>
-                        <td>Design</td>
-                        <td>09:12 AM</td>
-                        <td><span className="status status-present">Present</span></td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <div className="employee-cell">
-                            <div className="employee-avatar">MK</div>
-                            <div>
-                              <div className="employee-name">Mike Ross</div>
-                              <div className="employee-email">EMP-1044</div>
-                            </div>
-                          </div>
-                        </td>
-                        <td>Legal</td>
-                        <td>--</td>
-                        <td><span className="status status-pending">On Leave</span></td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
+              <div className="card-body" style={{ padding: 0 }}>
+                {pendingApprovals.length === 0 ? (
+                  <div style={{ padding: "30px", textAlign: "center", color: "var(--text-muted)" }}>
+                    <CheckCircle size={32} style={{ color: "var(--accent-emerald)", margin: "0 auto 8px" }} />
+                    <p>All leave applications have been reviewed!</p>
+                  </div>
+                ) : (
+                  <div className="table-container">
+                    <table className="data-table">
+                      <thead>
+                        <tr>
+                          <th>Employee</th>
+                          <th>Leave Type</th>
+                          <th>Duration</th>
+                          <th>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {pendingApprovals.map(req => (
+                          <tr key={req.id}>
+                            <td>
+                              <strong>{req.name}</strong>
+                              <div style={{ fontSize: "11px", color: "var(--text-muted)" }}>{req.reason}</div>
+                            </td>
+                            <td>{req.type}</td>
+                            <td>{req.days}</td>
+                            <td>
+                              <div style={{ display: "flex", gap: "6px" }}>
+                                <button 
+                                  className="btn btn-success" 
+                                  style={{ height: "32px", padding: "0 10px", fontSize: "12px" }}
+                                  onClick={() => handleDecision(req.id)}
+                                >
+                                  Approve
+                                </button>
+                                <button 
+                                  className="btn btn-danger" 
+                                  style={{ height: "32px", padding: "0 10px", fontSize: "12px" }}
+                                  onClick={() => handleDecision(req.id)}
+                                >
+                                  Reject
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
               </div>
             </div>
 
+            {/* Quick Operations Module */}
             <div className="card">
               <div className="card-header">
-                <h3>Quick Management</h3>
+                <h3>Admin Management Hub</h3>
               </div>
-              <div className="card-body">
-                <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-                  <Link to="/employees" className="btn btn-outline btn-full">Manage Employees</Link>
-                  <Link to="/employee/leave" className="btn btn-outline btn-full">Review Leave Requests</Link>
-                  <Link to="/payroll" className="btn btn-outline btn-full">Salary Structure Control</Link>
-                </div>
+              <div className="card-body" style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                <Link to="/admin/employees" className="btn btn-secondary btn-full" style={{ justifyContent: "space-between" }}>
+                  <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    <Users size={16} /> Employee Directory
+                  </span>
+                  <ArrowRight size={16} />
+                </Link>
+
+                <Link to="/admin/attendance" className="btn btn-secondary btn-full" style={{ justifyContent: "space-between" }}>
+                  <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    <Clock size={16} /> Attendance Logs
+                  </span>
+                  <ArrowRight size={16} />
+                </Link>
+
+                <Link to="/admin/analytics" className="btn btn-secondary btn-full" style={{ justifyContent: "space-between" }}>
+                  <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    <AlertTriangle size={16} /> Analytics & Compliance
+                  </span>
+                  <ArrowRight size={16} />
+                </Link>
               </div>
             </div>
           </div>

@@ -1,11 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
 import { useAuth } from "../context/AuthContext";
-import { IndianRupee, Download, CheckCircle2, ShieldCheck, Building2, CreditCard } from "lucide-react";
+import { IndianRupee, Download, CheckCircle2, ShieldCheck, Building2, CreditCard, Check } from "lucide-react";
 
 export default function Payroll() {
   const { user } = useAuth();
+  const [downloadSuccess, setDownloadSuccess] = useState("");
 
   const payslips = [
     { month: "July 2026", date: "31 Jul 2026", gross: "₹92,000", deductions: "₹7,200", net: "₹84,800", status: "Paid" },
@@ -14,6 +15,84 @@ export default function Payroll() {
     { month: "April 2026", date: "30 Apr 2026", gross: "₹88,000", deductions: "₹6,800", net: "₹81,200", status: "Paid" },
   ];
 
+  // Client-side file downloader helper
+  const triggerDownload = (filename, content) => {
+    const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", filename);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  // 1. Generate & Download Overall Salary Statement
+  const handleDownloadStatement = () => {
+    const statementContent = `=====================================================
+DAYFLOW HRMS - CONSOLIDATED ANNUAL SALARY STATEMENT
+=====================================================
+Employee Name : ${user?.name || "Adhithya N"}
+Employee ID   : ${user?.employeeId || "EMP-1042"}
+Bank Account  : HDFC Bank (A/C: **** **** 4092)
+PAN Number    : ABCDE1234F
+Tax Regime    : New Tax Regime (FY 2026-27)
+Generated On  : ${new Date().toLocaleDateString('en-GB')}
+-----------------------------------------------------
+PAYSLIP DISBURSEMENT ARCHIVE:
+-----------------------------------------------------
+${payslips.map(s => `${s.month.padEnd(14)} | Date: ${s.date} | Gross: ${s.gross.padEnd(8)} | Deductions: ${s.deductions.padEnd(8)} | Net: ${s.net}`).join("\n")}
+-----------------------------------------------------
+Total Net Credited (YTD) : ₹3,35,600.00
+Status                   : Fully Reconciled & Disbursed
+=====================================================
+Generated electronically by DayFlow HRMS Enterprise Engine.
+`;
+
+    triggerDownload(`Salary_Statement_${user?.employeeId || "EMP-1042"}.txt`, statementContent);
+    setDownloadSuccess("Consolidated Salary Statement downloaded successfully!");
+    setTimeout(() => setDownloadSuccess(""), 3500);
+  };
+
+  // 2. Generate & Download Specific Monthly Payslip
+  const handleDownloadSlip = (slip) => {
+    const payslipContent = `=====================================================
+DAYFLOW HRMS - MONTHLY SALARY PAYSLIP
+=====================================================
+Pay Period    : ${slip.month}
+Payment Date  : ${slip.date}
+Employee Name : ${user?.name || "Adhithya N"}
+Employee ID   : ${user?.employeeId || "EMP-1042"}
+Department    : Software Engineering
+Bank Details  : HDFC Bank (Chennai Branch) - A/C **** 4092
+-----------------------------------------------------
+EARNINGS & ALLOWANCES:
+  - Basic Pay                            : ₹48,000.00
+  - House Rent Allowance (HRA)           : ₹24,000.00
+  - Special Allowance & Conveyance       : ₹15,000.00
+  - Medical Allowance                    : ₹5,000.00
+  ---------------------------------------------------
+  Gross Earnings                         : ${slip.gross}
+
+DEDUCTIONS & STATUTORY CONTRIBUTIONS:
+  - Provident Fund (EPF Employee Share)  : ₹3,800.00
+  - Professional Tax (Tamil Nadu)        : ₹200.00
+  - Income Tax (TDS Deduction)           : ₹3,200.00
+  ---------------------------------------------------
+  Total Deductions                       : ${slip.deductions}
+-----------------------------------------------------
+NET TAKE-HOME SALARY CREDITED            : ${slip.net}
+Payment Status                           : ${slip.status}
+=====================================================
+This is a computer-generated salary advice and requires no signature.
+`;
+
+    triggerDownload(`Payslip_${slip.month.replace(/\s+/g, "_")}_${user?.employeeId || "EMP-1042"}.txt`, payslipContent);
+    setDownloadSuccess(`Payslip for ${slip.month} downloaded successfully!`);
+    setTimeout(() => setDownloadSuccess(""), 3500);
+  };
+
   return (
     <div className="dashboard-layout">
       <Sidebar role={user?.role || "Employee"} user={user || { name: "Adhithya N", role: "Software Engineer" }} />
@@ -21,6 +100,13 @@ export default function Payroll() {
         <Navbar title="My Payroll & Compensation" subtitle="Monthly salary breakdown, tax slips, and disbursement ledger" />
 
         <div className="dashboard-content">
+          {downloadSuccess && (
+            <div className="alert alert-success" style={{ animation: "slideUpFade 0.3s ease" }}>
+              <Check size={18} />
+              <span>{downloadSuccess}</span>
+            </div>
+          )}
+
           {/* Main Hero Pay Card */}
           <div className="salary-card-inr">
             <div className="salary-card-top">
@@ -42,7 +128,11 @@ export default function Payroll() {
             </div>
             <div className="salary-card-footer">
               <span>Next Disbursement: <strong>31 August 2026</strong></span>
-              <button className="btn btn-white-glass">
+              <button 
+                type="button" 
+                className="btn btn-white-glass"
+                onClick={handleDownloadStatement}
+              >
                 <Download size={15} />
                 <span>Download Salary Statement</span>
               </button>
@@ -157,7 +247,12 @@ export default function Payroll() {
                           <span className="status status-approved">{slip.status}</span>
                         </td>
                         <td>
-                          <button className="btn btn-outline" style={{ minHeight: "34px", padding: "0 12px", fontSize: "13px" }}>
+                          <button 
+                            type="button" 
+                            className="btn btn-outline" 
+                            style={{ minHeight: "34px", padding: "0 12px", fontSize: "13px" }}
+                            onClick={() => handleDownloadSlip(slip)}
+                          >
                             <Download size={14} /> PDF Slip
                           </button>
                         </td>
