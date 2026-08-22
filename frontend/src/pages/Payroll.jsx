@@ -2,13 +2,13 @@ import React, { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
 import Modal from "../components/Modal";
-import { Download, Edit3, CheckCircle, AlertCircle } from "lucide-react";
+import { Download, Edit3, CheckCircle, AlertCircle, IndianRupee, ShieldCheck, Building2, CreditCard, CheckCircle2 } from "lucide-react";
 import { payrollService } from "../services/api";
 import { useAuth } from "../context/AuthContext";
 
 export default function Payroll() {
   const { user } = useAuth();
-  const isAdmin = user?.role?.toUpperCase() === "ADMIN";
+  const isAdmin = (user?.role || "").toUpperCase() === "ADMIN";
 
   const [payrollData, setPayrollData] = useState(null);
   const [payrollsList, setPayrollsList] = useState([]);
@@ -46,15 +46,15 @@ export default function Payroll() {
   }, [user, isAdmin]);
 
   const activeSlip = payrollsList[0] || {
-    gross_salary: "$5,200.00",
-    net_salary: "$4,250.00",
-    basic_pay: "$3,200.00",
-    hra: "$1,200.00",
-    medical_allowance: "$400.00",
-    special_allowance: "$400.00",
-    tax_deduction: "$650.00",
-    health_insurance: "$200.00",
-    pf: "$100.00"
+    gross_salary: "₹92,000.00",
+    net_salary: "₹84,800.00",
+    basic_pay: "₹48,000.00",
+    hra: "₹24,000.00",
+    medical_allowance: "₹5,000.00",
+    special_allowance: "₹15,000.00",
+    tax_deduction: "₹3,200.00",
+    health_insurance: "₹200.00",
+    pf: "₹3,800.00"
   };
 
   const handleEditClick = (record) => {
@@ -90,7 +90,7 @@ export default function Payroll() {
     <div className="dashboard-layout">
       <Sidebar role={isAdmin ? "Admin" : "Employee"} user={user || { name: "User", role: "Employee" }} />
       <main className="dashboard-main">
-        <Navbar title={isAdmin ? "Payroll Control" : "My Payroll"} subtitle="View salary breakdown and payment slips" />
+        <Navbar title={isAdmin ? "Payroll Control" : "My Payroll & Compensation"} subtitle="Monthly salary breakdown, tax slips, and disbursement ledger" />
 
         <div className="dashboard-content">
           {bannerNotice && (
@@ -109,10 +109,34 @@ export default function Payroll() {
 
           {!isAdmin && (
             <>
-              <div className="salary-card" style={{ background: "linear-gradient(135deg, #4f46e5 0%, #3730a3 100%)", color: "#fff", padding: "24px", borderRadius: "12px", marginBottom: "24px" }}>
-                <div className="salary-card-label" style={{ opacity: 0.8, fontSize: "14px" }}>Monthly Gross Salary</div>
-                <div className="salary-card-amount" style={{ fontSize: "36px", fontWeight: "bold", margin: "8px 0" }}>{payrollData?.salary || activeSlip.gross_salary}</div>
-                <div className="salary-card-footer" style={{ opacity: 0.9, fontSize: "14px" }}>Net Take-Home: {activeSlip.net_salary} / month</div>
+              {/* Main Pay Hero Card */}
+              <div className="salary-card-inr" style={{ background: "linear-gradient(135deg, #1e1b4b 0%, #312e81 100%)", color: "#fff", padding: "24px", borderRadius: "12px", marginBottom: "24px" }}>
+                <div className="salary-card-top" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                  <div>
+                    <span className="salary-badge" style={{ background: "rgba(255,255,255,0.15)", padding: "4px 10px", borderRadius: "20px", fontSize: "12px", display: "inline-flex", alignItems: "center", gap: "6px" }}>
+                      <ShieldCheck size={14} /> Verified Salary Disbursement
+                    </span>
+                    <p className="salary-month" style={{ marginTop: "12px", opacity: 0.8, fontSize: "14px" }}>August 2026 Projected Net Pay</p>
+                    <div className="salary-amount-inr" style={{ fontSize: "36px", fontWeight: "bold", margin: "4px 0 16px 0" }}>{payrollData?.salary || activeSlip.net_salary}</div>
+                  </div>
+                  <div className="salary-bank-details" style={{ textAlign: "right" }}>
+                    <div className="bank-chip" style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "13px", opacity: 0.9 }}>
+                      <Building2 size={16} />
+                      <span>HDFC Bank Main Branch</span>
+                    </div>
+                    <div className="bank-acc" style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "12px", opacity: 0.7, marginTop: "4px", justifyContent: "flex-end" }}>
+                      <CreditCard size={14} />
+                      <span>A/C: •••• •••• 4092</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="salary-card-footer" style={{ borderTop: "1px solid rgba(255,255,255,0.15)", paddingTop: "16px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <span>Next Disbursement: <strong>31 August 2026</strong></span>
+                  <button className="btn btn-secondary" onClick={() => alert("Downloading salary statement PDF...")} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                    <Download size={15} />
+                    <span>Download Statement</span>
+                  </button>
+                </div>
               </div>
 
               <div className="content-grid equal" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "24px", marginBottom: "24px" }}>
@@ -144,25 +168,25 @@ export default function Payroll() {
 
                 <div className="card">
                   <div className="card-header">
-                    <h3>Deductions</h3>
+                    <h3>Deductions & Tax</h3>
                   </div>
                   <div className="card-body">
                     <div className="detail-grid">
                       <div className="detail-item">
-                        <label>Tax Withholding</label>
+                        <label>Tax Withholding (TDS)</label>
                         <span>{activeSlip.tax_deduction}</span>
                       </div>
                       <div className="detail-item">
-                        <label>Health Insurance</label>
+                        <label>Professional Tax</label>
                         <span>{activeSlip.health_insurance}</span>
                       </div>
                       <div className="detail-item">
-                        <label>Provident Fund</label>
+                        <label>Provident Fund (EPF)</label>
                         <span>{activeSlip.pf}</span>
                       </div>
                       <div className="detail-item">
-                        <label>Total Deductions</label>
-                        <span>$950.00</span>
+                        <label>Net Take-Home</label>
+                        <strong style={{ color: "#4f46e5" }}>{activeSlip.net_salary}</strong>
                       </div>
                     </div>
                   </div>
@@ -212,8 +236,8 @@ export default function Payroll() {
                                   <Edit3 size={14} /> Adjust Payroll
                                 </button>
                               ) : (
-                                <button className="btn btn-outline" style={{ minHeight: "32px", padding: "4px 10px", fontSize: "12px" }} onClick={() => alert("Payslip downloaded.")}>
-                                  <Download size={14} /> Download
+                                <button className="btn btn-outline" style={{ minHeight: "32px", padding: "4px 10px", fontSize: "12px" }} onClick={() => alert("Downloading payslip...")}>
+                                  <Download size={14} /> Download PDF
                                 </button>
                               )}
                             </td>

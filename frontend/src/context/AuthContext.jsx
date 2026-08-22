@@ -15,9 +15,10 @@ export function AuthProvider({ children }) {
   });
 
   const [loading, setLoading] = useState(false);
+  const [employeeUnreadCount, setEmployeeUnreadCount] = useState(3);
+  const [adminUnreadCount, setAdminUnreadCount] = useState(4);
 
   useEffect(() => {
-    // If token exists, verify profile with backend on app launch
     if (user?.token) {
       profileService.getProfile()
         .then((res) => {
@@ -48,9 +49,11 @@ export function AuthProvider({ children }) {
   };
 
   const updateUser = (updatedFields) => {
-    const updated = { ...user, ...updatedFields };
-    setUser(updated);
-    localStorage.setItem("dayflow_user", JSON.stringify(updated));
+    setUser((prev) => {
+      const updated = { ...prev, ...updatedFields };
+      localStorage.setItem("dayflow_user", JSON.stringify(updated));
+      return updated;
+    });
   };
 
   return (
@@ -60,6 +63,10 @@ export function AuthProvider({ children }) {
         login,
         logout,
         updateUser,
+        employeeUnreadCount,
+        setEmployeeUnreadCount,
+        adminUnreadCount,
+        setAdminUnreadCount,
         isAuthenticated: !!user,
         loading
       }}
@@ -70,5 +77,9 @@ export function AuthProvider({ children }) {
 }
 
 export function useAuth() {
-  return useContext(AuthContext);
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+  return context;
 }

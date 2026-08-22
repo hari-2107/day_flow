@@ -8,7 +8,7 @@ import { useAuth } from "../context/AuthContext";
 
 export default function Leave() {
   const { user } = useAuth();
-  const isAdmin = user?.role?.toUpperCase() === "ADMIN";
+  const isAdmin = (user?.role || "").toUpperCase() === "ADMIN";
 
   const [leaves, setLeaves] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -18,7 +18,7 @@ export default function Leave() {
 
   // Leave Form state
   const [form, setForm] = useState({
-    type: "Paid Leave",
+    type: "Casual Leave",
     from: "",
     to: "",
     remarks: ""
@@ -55,7 +55,7 @@ export default function Leave() {
     try {
       await leaveService.applyLeave(form);
       setBannerNotice("Leave application submitted successfully!");
-      setForm({ type: "Paid Leave", from: "", to: "", remarks: "" });
+      setForm({ type: "Casual Leave", from: "", to: "", remarks: "" });
       fetchLeaves();
       setTimeout(() => setBannerNotice(""), 3500);
     } catch (err) {
@@ -95,7 +95,7 @@ export default function Leave() {
     <div className="dashboard-layout">
       <Sidebar role={isAdmin ? "Admin" : "Employee"} user={user || { name: "User", role: "Employee" }} />
       <main className="dashboard-main">
-        <Navbar title={isAdmin ? "Leave Approvals" : "Leave Management"} subtitle="Apply for time-off and track your approvals" />
+        <Navbar title={isAdmin ? "Leave Approvals" : "Leave & Absence Management"} subtitle="Apply for leaves, view balance quotas, and track approvals" />
 
         <div className="dashboard-content">
           {bannerNotice && (
@@ -112,18 +112,42 @@ export default function Leave() {
             </div>
           )}
 
-          <div className="leave-balance-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "16px", marginBottom: "24px" }}>
-            <div className="leave-balance" style={{ background: "#fff", padding: "20px", borderRadius: "10px", border: "1px solid #e2e8f0" }}>
-              <h4 style={{ fontSize: "14px", color: "#64748b", margin: 0 }}>Paid Leave Balance</h4>
-              <strong style={{ fontSize: "24px", color: "#4f46e5" }}>10 Days</strong>
+          {/* Leave Balance Stats */}
+          <div className="stats-grid" style={{ marginBottom: "24px" }}>
+            <div className="stat-card">
+              <div className="stat-card-top">
+                <span className="stat-card-label">Casual Leaves</span>
+                <div className="stat-icon"><CalendarDays size={20} /></div>
+              </div>
+              <div className="stat-card-value">08 / 12</div>
+              <div className="stat-card-footer">4 Days Utilized</div>
             </div>
-            <div className="leave-balance" style={{ background: "#fff", padding: "20px", borderRadius: "10px", border: "1px solid #e2e8f0" }}>
-              <h4 style={{ fontSize: "14px", color: "#64748b", margin: 0 }}>Sick Leave Balance</h4>
-              <strong style={{ fontSize: "24px", color: "#10b981" }}>4 Days</strong>
+
+            <div className="stat-card">
+              <div className="stat-card-top">
+                <span className="stat-card-label">Sick Leaves</span>
+                <div className="stat-icon warning"><Clock size={20} /></div>
+              </div>
+              <div className="stat-card-value">09 / 10</div>
+              <div className="stat-card-footer">1 Day Utilized</div>
             </div>
-            <div className="leave-balance" style={{ background: "#fff", padding: "20px", borderRadius: "10px", border: "1px solid #e2e8f0" }}>
-              <h4 style={{ fontSize: "14px", color: "#64748b", margin: 0 }}>Unpaid Leave Used</h4>
-              <strong style={{ fontSize: "24px", color: "#f59e0b" }}>0 Days</strong>
+
+            <div className="stat-card">
+              <div className="stat-card-top">
+                <span className="stat-card-label">Earned / Privilege</span>
+                <div className="stat-icon success"><CheckCircle size={20} /></div>
+              </div>
+              <div className="stat-card-value">15 / 15</div>
+              <div className="stat-card-footer">Fully Available</div>
+            </div>
+
+            <div className="stat-card">
+              <div className="stat-card-top">
+                <span className="stat-card-label">Unpaid Leave (LWP)</span>
+                <div className="stat-icon danger"><AlertCircle size={20} /></div>
+              </div>
+              <div className="stat-card-value">00 Days</div>
+              <div className="stat-card-footer">Zero loss of pay days</div>
             </div>
           </div>
 
@@ -132,7 +156,7 @@ export default function Leave() {
             {!isAdmin && (
               <div className="card">
                 <div className="card-header">
-                  <h3>Apply for Leave</h3>
+                  <h3>Submit New Leave Request</h3>
                 </div>
                 <div className="card-body">
                   <form className="auth-form" onSubmit={handleSubmit}>
@@ -144,9 +168,10 @@ export default function Leave() {
                           onChange={(e) => setForm({ ...form, type: e.target.value })}
                           style={{ height: "46px", paddingLeft: "12px", width: "100%", borderRadius: "6px", border: "1px solid #cbd5e1" }}
                         >
-                          <option value="Paid Leave">Paid Leave</option>
-                          <option value="Sick Leave">Sick Leave</option>
-                          <option value="Unpaid Leave">Unpaid Leave</option>
+                          <option value="Casual Leave">Casual Leave (CL)</option>
+                          <option value="Sick Leave">Sick Leave (SL)</option>
+                          <option value="Earned Leave">Earned Leave (EL)</option>
+                          <option value="Unpaid Leave">Unpaid Leave (LWP)</option>
                         </select>
                       </div>
                     </div>

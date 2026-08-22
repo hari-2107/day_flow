@@ -5,7 +5,7 @@ import {
   UserCheck, 
   CalendarDays, 
   Clock, 
-  DollarSign, 
+  IndianRupee, 
   Users, 
   CheckSquare,
   BarChart3,
@@ -16,7 +16,7 @@ import { useAuth } from "../context/AuthContext";
 
 export default function Sidebar({ role, user: userProp, isOpen, onClose }) {
   const { user: authUser } = useAuth();
-  const currentUser = userProp || authUser || { name: "User", role: "Employee" };
+  const currentUser = userProp || authUser || { name: "User", role: "EMPLOYEE" };
   const currentRole = role || currentUser.role || "EMPLOYEE";
   const isAdmin = (currentRole || "").toUpperCase() === "ADMIN";
 
@@ -24,28 +24,22 @@ export default function Sidebar({ role, user: userProp, isOpen, onClose }) {
     <>
       <div 
         className={`sidebar-overlay ${isOpen ? "show" : ""}`} 
-        onClick={onClose}
+        onClick={onClose} 
       />
 
       <aside className={`sidebar ${isOpen ? "open" : ""}`}>
-        <div className="sidebar-brand" style={{ justifyContent: "space-between" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-            <div className="sidebar-logo">DF</div>
-            <div className="sidebar-brand-name">Day<span>Flow</span></div>
-          </div>
+        <div className="sidebar-brand">
+          <div className="sidebar-logo">DF</div>
+          <div className="sidebar-brand-name">Day<span>Flow</span></div>
           {onClose && (
-            <button 
-              className="mobile-menu-btn" 
-              onClick={onClose} 
-              style={{ border: "none", background: "transparent" }}
-            >
+            <button className="mobile-menu-btn" onClick={onClose} style={{ marginLeft: "auto", border: "none", background: "transparent" }}>
               <X size={20} />
             </button>
           )}
         </div>
 
         <nav className="sidebar-nav">
-          <div className="sidebar-section-title">Main Menu</div>
+          <div className="sidebar-section-title">Main Hub</div>
           
           <NavLink 
             to={isAdmin ? "/admin/dashboard" : "/employee/dashboard"} 
@@ -65,17 +59,17 @@ export default function Sidebar({ role, user: userProp, isOpen, onClose }) {
               </NavLink>
               <NavLink to="/employee/attendance" className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`} onClick={onClose}>
                 <Clock size={18} />
-                <span>Attendance</span>
+                <span>Attendance Log</span>
               </NavLink>
               <NavLink to="/employee/leave" className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`} onClick={onClose}>
                 <CalendarDays size={18} />
-                <span>Leave Requests</span>
+                <span>Leave Management</span>
               </NavLink>
               <NavLink to="/employee/payroll" className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`} onClick={onClose}>
-                <DollarSign size={18} />
-                <span>My Payroll</span>
+                <IndianRupee size={18} />
+                <span>Payroll & Slips</span>
               </NavLink>
-              <NavLink to="/notifications" className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`} onClick={onClose}>
+              <NavLink to="/employee/notifications" className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`} onClick={onClose}>
                 <Bell size={18} />
                 <span>Notifications</span>
               </NavLink>
@@ -85,7 +79,7 @@ export default function Sidebar({ role, user: userProp, isOpen, onClose }) {
               <div className="sidebar-section-title">HR Management</div>
               <NavLink to="/admin/employees" className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`} onClick={onClose}>
                 <Users size={18} />
-                <span>Employees</span>
+                <span>Employee Directory</span>
               </NavLink>
               <NavLink to="/admin/attendance" className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`} onClick={onClose}>
                 <Clock size={18} />
@@ -96,12 +90,16 @@ export default function Sidebar({ role, user: userProp, isOpen, onClose }) {
                 <span>Leave Approvals</span>
               </NavLink>
               <NavLink to="/admin/payroll" className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`} onClick={onClose}>
-                <DollarSign size={18} />
+                <IndianRupee size={18} />
                 <span>Payroll Control</span>
               </NavLink>
-              <NavLink to="/analytics" className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`} onClick={onClose}>
+              <NavLink to="/admin/analytics" className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`} onClick={onClose}>
                 <BarChart3 size={18} />
                 <span>Analytics & Reports</span>
+              </NavLink>
+              <NavLink to="/admin/notifications" className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`} onClick={onClose}>
+                <Bell size={18} />
+                <span>Notifications</span>
               </NavLink>
             </>
           )}
@@ -109,12 +107,14 @@ export default function Sidebar({ role, user: userProp, isOpen, onClose }) {
 
         <div className="sidebar-user">
           <div className="sidebar-user-content" style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            <div className="avatar" style={{ width: "36px", height: "36px", borderRadius: "50%", background: "#4f46e5", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: "bold" }}>
-              {(currentUser.name || "U").charAt(0)}
-            </div>
+            {currentUser.avatar ? (
+              <img src={currentUser.avatar} alt="User Avatar" className="sidebar-avatar-img" />
+            ) : (
+              <div className="avatar">{(currentUser.name || "U").charAt(0)}</div>
+            )}
             <div className="user-info">
-              <strong style={{ display: "block", fontSize: "14px" }}>{currentUser.name}</strong>
-              <span style={{ fontSize: "12px", color: "#94a3b8" }}>{currentUser.role || currentUser.designation}</span>
+              <strong>{currentUser.name}</strong>
+              <span>{currentUser.role || currentUser.designation}</span>
             </div>
           </div>
         </div>
