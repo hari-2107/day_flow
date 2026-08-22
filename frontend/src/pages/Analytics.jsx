@@ -93,8 +93,8 @@ export default function Analytics() {
                   <AreaChart data={attendanceData}>
                     <defs>
                       <linearGradient id="colorRate" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#2563eb" stopOpacity={0.4} />
-                        <stop offset="95%" stopColor="#2563eb" stopOpacity={0.0} />
+                        <stop offset="5%" stopColor="#4338ca" stopOpacity={0.4} />
+                        <stop offset="95%" stopColor="#4338ca" stopOpacity={0.0} />
                       </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
@@ -104,7 +104,7 @@ export default function Analytics() {
                       contentStyle={{ background: "#ffffff", borderRadius: "8px", border: "1px solid #e2e8f0" }}
                       formatter={(value) => [`${value}%`, "Attendance"]}
                     />
-                    <Area type="monotone" dataKey="rate" stroke="#2563eb" strokeWidth={2} fillOpacity={1} fill="url(#colorRate)" />
+                    <Area type="monotone" dataKey="rate" stroke="#4338ca" strokeWidth={2} fillOpacity={1} fill="url(#colorRate)" />
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
@@ -125,7 +125,7 @@ export default function Analytics() {
                       contentStyle={{ background: "#ffffff", borderRadius: "8px", border: "1px solid #e2e8f0" }}
                     />
                     <Legend />
-                    <Bar dataKey="paid" name="Paid Leave" fill="#2563eb" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="paid" name="Paid Leave" fill="#4338ca" radius={[4, 4, 0, 0]} />
                     <Bar dataKey="sick" name="Sick Leave" fill="#f59e0b" radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>

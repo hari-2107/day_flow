@@ -322,7 +322,7 @@ This is a computer-generated salary advice and requires no signature.
                         <th>Disbursement Date</th>
                         <th>Gross Pay</th>
                         <th>Net Take-Home</th>
-                        <th>Action</th>
+                        <th style={{ textAlign: "right" }}>Action</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -339,7 +339,7 @@ This is a computer-generated salary advice and requires no signature.
                             <td>{slip.date || slip.issued_date || "31 Aug 2026"}</td>
                             <td>{slip.gross || slip.gross_salary || "₹92,000"}</td>
                             <td><strong className="text-primary">{slip.net || slip.net_salary || "₹84,800"}</strong></td>
-                            <td>
+                            <td style={{ textAlign: "right" }}>
                               {isAdmin ? (
                                 <button className="btn btn-outline" style={{ minHeight: "32px", padding: "4px 10px", fontSize: "12px" }} onClick={() => handleEditClick(slip)}>
                                   <Edit3 size={14} /> Adjust Payroll

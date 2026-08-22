@@ -51,12 +51,20 @@ export default function VerifyEmail() {
 
   return (
     <div className="auth-page">
-      <div className="auth-container">
-        <div className="auth-brand">
-          <div className="auth-logo">WS</div>
-          <h1>Work<span>Sync</span></h1>
-          <p>Enterprise Workforce & Payroll Suite</p>
+      <div className="auth-sidebar">
+        <div className="auth-sidebar-content">
+          <div className="auth-logo" style={{ margin: "0 0 24px 0" }}>WS</div>
+          <h2>Enterprise Workforce & Payroll Suite</h2>
+          <p>Streamline your HR processes, manage attendance, and automate payroll with our modern enterprise platform.</p>
         </div>
+      </div>
+      <div className="auth-content">
+        <div className="auth-container">
+          <div className="auth-brand mobile-only">
+            <div className="auth-logo">WS</div>
+            <h1>Work<span>Sync</span></h1>
+            <p>Enterprise Workforce & Payroll Suite</p>
+          </div>
 
         <div className="auth-card">
           <div className="verification-container">
@@ -122,6 +130,7 @@ export default function VerifyEmail() {
               </button>
             </div>
           </div>
+        </div>
         </div>
       </div>
     </div>

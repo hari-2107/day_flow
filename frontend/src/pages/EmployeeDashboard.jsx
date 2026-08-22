@@ -8,7 +8,10 @@ import {
   IndianRupee, 
   CheckCircle2, 
   ArrowRight,
-  TrendingUp
+  TrendingUp,
+  Loader2,
+  MapPin,
+  CheckCircle
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { attendanceService, leaveService, payrollService } from "../services/api";
@@ -18,6 +21,7 @@ export default function EmployeeDashboard() {
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [isClockedIn, setIsClockedIn] = useState(false);
   const [clockInTime, setClockInTime] = useState(null);
+  const [isPunching, setIsPunching] = useState(false);
 
   const [attendance, setAttendance] = useState([]);
   const [leaves, setLeaves] = useState([]);
@@ -59,6 +63,7 @@ export default function EmployeeDashboard() {
   }, [user]);
 
   const handleClockToggle = async () => {
+    setIsPunching(true);
     if (!isClockedIn) {
       const nowTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       setIsClockedIn(true);
@@ -76,6 +81,7 @@ export default function EmployeeDashboard() {
         console.warn("API check-out note:", e?.message);
       }
     }
+    setTimeout(() => setIsPunching(false), 600); // Artificial delay for UX
   };
 
   const pendingLeaves = leaves.filter(l => l.status === "Pending").length;
@@ -96,60 +102,10 @@ export default function EmployeeDashboard() {
           toggleMobileSidebar={() => setMobileSidebarOpen(prev => !prev)}
         />
 
-        <div className="dashboard-content">
-          {}
-          <div className="stats-grid">
-            <div className="stat-card">
-              <div className="stat-card-top">
-                <span className="stat-card-label">Shift Status</span>
-                <div className={`stat-icon ${isClockedIn ? "success" : "warning"}`}>
-                  <Clock size={20} />
-                </div>
-              </div>
-              <div className="stat-card-value">
-                {isClockedIn ? "Active" : "Off Duty"}
-              </div>
-              <div className="stat-card-footer">
-                {isClockedIn ? `Clocked in at ${clockInTime}` : "Standard Shift: 09:00 AM - 06:00 PM"}
-              </div>
-            </div>
-
-            <div className="stat-card">
-              <div className="stat-card-top">
-                <span className="stat-card-label">Available Leaves</span>
-                <div className="stat-icon success">
-                  <Calendar size={20} />
-                </div>
-              </div>
-              <div className="stat-card-value">17 Days</div>
-              <div className="stat-card-footer">8 Casual • 9 Sick remaining</div>
-            </div>
-
-            <div className="stat-card">
-              <div className="stat-card-top">
-                <span className="stat-card-label">August Net Salary</span>
-                <div className="stat-icon">
-                  <IndianRupee size={20} />
-                </div>
-              </div>
-              <div className="stat-card-value">₹84,800</div>
-              <div className="stat-card-footer">Scheduled for Aug 31</div>
-            </div>
-
-            <div className="stat-card">
-              <div className="stat-card-top">
-                <span className="stat-card-label">Attendance Score</span>
-                <div className="stat-icon success">
-                  <TrendingUp size={20} />
-                </div>
-              </div>
-              <div className="stat-card-value">98.4%</div>
-              <div className="stat-card-footer">Zero unexcused absences</div>
-            </div>
-          </div>
-
-          <div className="content-grid">
-            {}
+        <div className="dashboard-content" style={{ display: "flex", gap: "24px", flexWrap: "wrap" }}>
+          
+          <div style={{ flex: "1 1 0%", minWidth: "600px", display: "flex", flexDirection: "column", gap: "24px" }}>
+            {/* Daily Attendance Terminal (Hero) */}
             <div className="card">
               <div className="card-header">
                 <h3>Daily Attendance Terminal</h3>
@@ -157,53 +113,106 @@ export default function EmployeeDashboard() {
               <div className="card-body">
                 <div className="attendance-card">
                   <span className="form-label">Current Server Timestamp</span>
-                  <div className="attendance-time">
+                  <div className="attendance-time" style={{ fontFamily: "var(--font-mono)", display: "flex", alignItems: "center", gap: "12px" }}>
+                    <div className="pulsing-dot" style={{ width: "12px", height: "12px", backgroundColor: "var(--accent-emerald)", borderRadius: "50%", animation: "pulse 2s infinite" }}></div>
                     {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
                   </div>
-                  <p style={{ fontSize: "13px", color: "var(--text-muted)", marginBottom: "20px" }}>
-                    Location: Corporate Headquarters (Chennai Wi-Fi Verified)
+                  <p style={{ fontSize: "13px", color: "var(--text-muted)", marginBottom: "20px", display: "flex", alignItems: "center", gap: "6px" }}>
+                    <MapPin size={14} /> Location: Corporate Headquarters <CheckCircle size={14} color="var(--accent-emerald)" style={{ marginLeft: "4px" }} />
                   </p>
                   
                   <button 
                     type="button"
                     className={`btn ${isClockedIn ? "btn-danger" : "btn-primary"} btn-lg`}
                     onClick={handleClockToggle}
-                    style={{ minWidth: "220px" }}
+                    disabled={isPunching}
+                    style={{ minWidth: "220px", opacity: isPunching ? 0.7 : 1 }}
                   >
-                    <Clock size={18} />
-                    <span>{isClockedIn ? "Clock Out for Today" : "Punch Clock In"}</span>
+                    {isPunching ? <Loader2 size={18} className="spin-anim" /> : <Clock size={18} />}
+                    <span>{isPunching ? "Processing..." : (isClockedIn ? "Clock Out for Today" : "Punch Clock In")}</span>
                   </button>
                 </div>
               </div>
             </div>
 
-            {}
-            <div className="card">
-              <div className="card-header">
-                <h3>Quick Navigation</h3>
+            {/* Stats Row */}
+            <div className="stats-grid" style={{ marginBottom: 0 }}>
+              <div className="stat-card">
+                <div className="stat-card-top">
+                  <span className="stat-card-label">Shift Status</span>
+                  <div className={`stat-icon ${isClockedIn ? "success" : "warning"}`}>
+                    <Clock size={20} />
+                  </div>
+                </div>
+                <div className="stat-card-value">
+                  {isClockedIn ? "Active" : "Off Duty"}
+                </div>
+                <div className="stat-card-footer">
+                  {isClockedIn ? `Clocked in at ${clockInTime}` : "Standard Shift: 09:00 AM - 06:00 PM"}
+                </div>
               </div>
-              <div className="card-body" style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                <Link to="/employee/leave" className="btn btn-secondary btn-full" style={{ justifyContent: "space-between" }}>
-                  <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                    <Calendar size={16} /> Apply Leave Request
-                  </span>
-                  <ArrowRight size={16} />
-                </Link>
 
-                <Link to="/employee/payroll" className="btn btn-secondary btn-full" style={{ justifyContent: "space-between" }}>
-                  <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                    <IndianRupee size={16} /> View August Payslip
-                  </span>
-                  <ArrowRight size={16} />
-                </Link>
-
-                <Link to="/employee/profile" className="btn btn-secondary btn-full" style={{ justifyContent: "space-between" }}>
-                  <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                    <CheckCircle2 size={16} /> Update Contact Info
-                  </span>
-                  <ArrowRight size={16} />
-                </Link>
+              <div className="stat-card">
+                <div className="stat-card-top">
+                  <span className="stat-card-label">Available Leaves</span>
+                  <div className="stat-icon success">
+                    <Calendar size={20} />
+                  </div>
+                </div>
+                <div className="stat-card-value">17 Days</div>
+                <div className="stat-card-footer">8 Casual • 9 Sick remaining</div>
               </div>
+
+              <div className="stat-card">
+                <div className="stat-card-top">
+                  <span className="stat-card-label">August Net Salary</span>
+                  <div className="stat-icon info">
+                    <IndianRupee size={20} />
+                  </div>
+                </div>
+                <div className="stat-card-value">₹84,800</div>
+                <div className="stat-card-footer">Scheduled for Aug 31</div>
+              </div>
+
+              <div className="stat-card">
+                <div className="stat-card-top">
+                  <span className="stat-card-label">Attendance Score</span>
+                  <div className="stat-icon success">
+                    <TrendingUp size={20} />
+                  </div>
+                </div>
+                <div className="stat-card-value">98.4%</div>
+                <div className="stat-card-footer">Zero unexcused absences</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Quick Navigation Right Rail */}
+          <div className="card" style={{ width: "300px", height: "fit-content", flexShrink: 0 }}>
+            <div className="card-header">
+              <h3>Quick Navigation</h3>
+            </div>
+            <div className="card-body" style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+              <Link to="/employee/leave" className="btn btn-secondary btn-full" style={{ justifyContent: "space-between" }}>
+                <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                  <Calendar size={16} /> Apply Leave Request
+                </span>
+                <ArrowRight size={16} />
+              </Link>
+
+              <Link to="/employee/payroll" className="btn btn-secondary btn-full" style={{ justifyContent: "space-between" }}>
+                <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                  <IndianRupee size={16} /> View August Payslip
+                </span>
+                <ArrowRight size={16} />
+              </Link>
+
+              <Link to="/employee/profile" className="btn btn-secondary btn-full" style={{ justifyContent: "space-between" }}>
+                <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                  <CheckCircle2 size={16} /> Update Contact Info
+                </span>
+                <ArrowRight size={16} />
+              </Link>
             </div>
           </div>
         </div>

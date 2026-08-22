@@ -178,7 +178,7 @@ export default function Employees() {
                               <td>{emp.role}</td>
                               <td>{emp.salary}</td>
                               <td>
-                                <span className={`status ${emp.status === "Active" ? "status-active" : "status-inactive"}`}>
+                                <span className={`status-pill ${emp.status === "Active" ? "status-approved" : "status-rejected"}`}>
                                   {emp.status}
                                 </span>
                               </td>

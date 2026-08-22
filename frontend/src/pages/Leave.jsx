@@ -27,6 +27,7 @@ export default function Leave() {
   
   const [selectedLeave, setSelectedLeave] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSlideOverOpen, setIsSlideOverOpen] = useState(false);
   const [adminComments, setAdminComments] = useState("");
   const [actionStatus, setActionStatus] = useState("Approved");
 
@@ -63,6 +64,7 @@ export default function Leave() {
       setErrorMsg(err.response?.data?.message || "Failed to submit leave request.");
     } finally {
       setSubmitting(false);
+      setIsSlideOverOpen(false);
     }
   };
 
@@ -117,9 +119,12 @@ export default function Leave() {
             <div className="stat-card">
               <div className="stat-card-top">
                 <span className="stat-card-label">Casual Leaves</span>
-                <div className="stat-icon"><CalendarDays size={20} /></div>
+                <div className="stat-icon info"><CalendarDays size={20} /></div>
               </div>
               <div className="stat-card-value">08 / 12</div>
+              <div style={{ width: "100%", height: "4px", backgroundColor: "var(--surface-subtle)", borderRadius: "2px", margin: "12px 0 8px" }}>
+                <div style={{ width: "66%", height: "100%", backgroundColor: "var(--accent-cyan)", borderRadius: "2px" }}></div>
+              </div>
               <div className="stat-card-footer">4 Days Utilized</div>
             </div>
 
@@ -129,6 +134,9 @@ export default function Leave() {
                 <div className="stat-icon warning"><Clock size={20} /></div>
               </div>
               <div className="stat-card-value">09 / 10</div>
+              <div style={{ width: "100%", height: "4px", backgroundColor: "var(--surface-subtle)", borderRadius: "2px", margin: "12px 0 8px" }}>
+                <div style={{ width: "90%", height: "100%", backgroundColor: "var(--accent-amber)", borderRadius: "2px" }}></div>
+              </div>
               <div className="stat-card-footer">1 Day Utilized</div>
             </div>
 
@@ -138,6 +146,9 @@ export default function Leave() {
                 <div className="stat-icon success"><CheckCircle size={20} /></div>
               </div>
               <div className="stat-card-value">15 / 15</div>
+              <div style={{ width: "100%", height: "4px", backgroundColor: "var(--surface-subtle)", borderRadius: "2px", margin: "12px 0 8px" }}>
+                <div style={{ width: "100%", height: "100%", backgroundColor: "var(--accent-emerald)", borderRadius: "2px" }}></div>
+              </div>
               <div className="stat-card-footer">Fully Available</div>
             </div>
 
@@ -147,88 +158,26 @@ export default function Leave() {
                 <div className="stat-icon danger"><AlertCircle size={20} /></div>
               </div>
               <div className="stat-card-value">00 Days</div>
+              <div style={{ width: "100%", height: "4px", backgroundColor: "var(--surface-subtle)", borderRadius: "2px", margin: "12px 0 8px" }}>
+                <div style={{ width: "0%", height: "100%", backgroundColor: "var(--accent-rose)", borderRadius: "2px" }}></div>
+              </div>
               <div className="stat-card-footer">Zero loss of pay days</div>
             </div>
           </div>
 
-          <div className="content-grid">
-            {}
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+            <h3 style={{ fontSize: "18px", fontWeight: "800", color: "var(--text-heading)", margin: 0 }}>
+              {isAdmin ? "All Employee Leave Applications" : "My Leave Requests"}
+            </h3>
             {!isAdmin && (
-              <div className="card">
-                <div className="card-header">
-                  <h3>Submit New Leave Request</h3>
-                </div>
-                <div className="card-body">
-                  <form className="auth-form" onSubmit={handleSubmit}>
-                    <div className="form-group">
-                      <label className="form-label required">Leave Type</label>
-                      <div className="input-wrapper">
-                        <select
-                          value={form.type}
-                          onChange={(e) => setForm({ ...form, type: e.target.value })}
-                          style={{ height: "46px", paddingLeft: "12px", width: "100%", borderRadius: "6px", border: "1px solid #cbd5e1" }}
-                        >
-                          <option value="Casual Leave">Casual Leave (CL)</option>
-                          <option value="Sick Leave">Sick Leave (SL)</option>
-                          <option value="Earned Leave">Earned Leave (EL)</option>
-                          <option value="Unpaid Leave">Unpaid Leave (LWP)</option>
-                        </select>
-                      </div>
-                    </div>
-
-                    <div className="form-row" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
-                      <div className="form-group">
-                        <label className="form-label required">From Date</label>
-                        <div className="input-wrapper">
-                          <input
-                            type="date"
-                            value={form.from}
-                            onChange={(e) => setForm({ ...form, from: e.target.value })}
-                            required
-                          />
-                        </div>
-                      </div>
-                      <div className="form-group">
-                        <label className="form-label required">To Date</label>
-                        <div className="input-wrapper">
-                          <input
-                            type="date"
-                            value={form.to}
-                            onChange={(e) => setForm({ ...form, to: e.target.value })}
-                            required
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="form-group">
-                      <label className="form-label required">Reason / Remarks</label>
-                      <div className="input-wrapper">
-                        <textarea
-                          rows="3"
-                          placeholder="Provide details about your leave..."
-                          value={form.remarks}
-                          onChange={(e) => setForm({ ...form, remarks: e.target.value })}
-                          required
-                          style={{ width: "100%", padding: "10px", borderRadius: "6px", border: "1px solid #cbd5e1" }}
-                        ></textarea>
-                      </div>
-                    </div>
-
-                    <button type="submit" className="btn btn-primary btn-full" disabled={submitting}>
-                      {submitting ? "Submitting..." : "Submit Request"}
-                    </button>
-                  </form>
-                </div>
-              </div>
+              <button className="btn btn-primary" onClick={() => setIsSlideOverOpen(true)}>
+                <CalendarDays size={16} /> Apply for Leave
+              </button>
             )}
+          </div>
 
-            {}
-            <div className="card" style={{ gridColumn: isAdmin ? "1 / -1" : "auto" }}>
-              <div className="card-header">
-                <h3>{isAdmin ? "All Employee Leave Applications" : "My Leave Requests"}</h3>
-              </div>
-              <div className="card-body" style={{ padding: 0 }}>
+          <div className="card">
+            <div className="card-body" style={{ padding: 0 }}>
                 {loading ? (
                   <div style={{ padding: "32px", textAlign: "center", color: "#64748b" }}>Loading leaves...</div>
                 ) : (
@@ -245,7 +194,16 @@ export default function Leave() {
                         </tr>
                       </thead>
                       <tbody>
-                        {leaves.length > 0 ? (
+                        {leaves.length === 0 ? (
+                          <tr>
+                            <td colSpan={isAdmin ? "6" : "5"} style={{ textAlign: "center", padding: "48px 0", color: "var(--text-muted)" }}>
+                              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "12px" }}>
+                                <CalendarDays size={32} opacity={0.5} />
+                                <span>No leave applications found</span>
+                              </div>
+                            </td>
+                          </tr>
+                        ) : (
                           leaves.map((l) => (
                             <tr key={l.id}>
                               {isAdmin && (
@@ -254,11 +212,13 @@ export default function Leave() {
                                   <div style={{ fontSize: "12px", color: "#64748b" }}>{l.employee_id}</div>
                                 </td>
                               )}
-                              <td>{l.leave_type || l.type}</td>
-                              <td>{l.from_date || l.from} to {l.to_date || l.to}</td>
+                              <td style={{ fontWeight: 600 }}>{l.leave_type || l.type}</td>
+                              <td style={{ fontFamily: "var(--font-mono)" }}>
+                                {l.from_date || l.from} <span style={{ color: "var(--text-subtle)", fontSize: "11px" }}>to</span> {l.to_date || l.to}
+                              </td>
                               <td style={{ maxWidth: "200px" }}>{l.reason || l.remarks}</td>
                               <td>
-                                <span className={`status ${l.status === "Approved" ? "status-approved" : l.status === "Rejected" ? "status-inactive" : "status-pending"}`}>
+                                <span className={`status-pill ${l.status === "Approved" ? "status-approved" : l.status === "Rejected" ? "status-rejected" : "status-pending"}`}>
                                   {l.status}
                                 </span>
                               </td>
@@ -268,14 +228,14 @@ export default function Leave() {
                                     <div style={{ display: "flex", gap: "6px" }}>
                                       <button
                                         className="btn btn-primary"
-                                        style={{ padding: "4px 8px", fontSize: "12px" }}
+                                        style={{ padding: "4px 8px", fontSize: "12px", height: "28px" }}
                                         onClick={() => openApprovalModal(l, "Approved")}
                                       >
                                         <Check size={14} /> Approve
                                       </button>
                                       <button
                                         className="btn btn-outline"
-                                        style={{ padding: "4px 8px", fontSize: "12px", color: "#ef4444", borderColor: "#ef4444" }}
+                                        style={{ padding: "4px 8px", fontSize: "12px", height: "28px", color: "#ef4444", borderColor: "#ef4444" }}
                                         onClick={() => openApprovalModal(l, "Rejected")}
                                       >
                                         <X size={14} /> Reject
@@ -288,12 +248,6 @@ export default function Leave() {
                               )}
                             </tr>
                           ))
-                        ) : (
-                          <tr>
-                            <td colSpan={isAdmin ? 6 : 4} style={{ textAlign: "center", padding: "20px", color: "#64748b" }}>
-                              No leave applications found.
-                            </td>
-                          </tr>
                         )}
                       </tbody>
                     </table>
@@ -302,7 +256,6 @@ export default function Leave() {
               </div>
             </div>
           </div>
-        </div>
       </main>
 
       {}
@@ -344,6 +297,87 @@ export default function Leave() {
           </form>
         )}
       </Modal>
+
+      {/* Slide-over for Leave Application */}
+      <div className={`slide-over-overlay ${isSlideOverOpen ? "open" : ""}`} onClick={(e) => e.target.classList.contains('slide-over-overlay') && setIsSlideOverOpen(false)}>
+        <div className="slide-over-panel">
+          <div className="slide-over-header">
+            <h3>Submit New Leave Request</h3>
+            <button className="btn btn-icon" onClick={() => setIsSlideOverOpen(false)} style={{ background: "transparent", border: "none", color: "var(--text-muted)", cursor: "pointer" }}>
+              <X size={24} />
+            </button>
+          </div>
+          <div className="slide-over-body">
+            <form className="auth-form" onSubmit={handleSubmit}>
+              <div className="form-group">
+                <label className="form-label required">Leave Type</label>
+                <div className="input-wrapper">
+                  <CalendarDays className="input-icon" size={18} />
+                  <select
+                    value={form.type}
+                    onChange={(e) => setForm({ ...form, type: e.target.value })}
+                  >
+                    <option value="Casual Leave">Casual Leave (CL)</option>
+                    <option value="Sick Leave">Sick Leave (SL)</option>
+                    <option value="Earned Leave">Earned Leave (EL)</option>
+                    <option value="Unpaid Leave">Unpaid Leave (LWP)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="form-row" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+                <div className="form-group">
+                  <label className="form-label required">From Date</label>
+                  <div className="input-wrapper">
+                    <CalendarDays className="input-icon" size={18} />
+                    <input
+                      type="date"
+                      value={form.from}
+                      onChange={(e) => setForm({ ...form, from: e.target.value })}
+                      required
+                    />
+                  </div>
+                </div>
+                <div className="form-group">
+                  <label className="form-label required">To Date</label>
+                  <div className="input-wrapper">
+                    <CalendarDays className="input-icon" size={18} />
+                    <input
+                      type="date"
+                      value={form.to}
+                      onChange={(e) => setForm({ ...form, to: e.target.value })}
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label className="form-label required">Reason / Remarks</label>
+                <div className="input-wrapper">
+                  <textarea
+                    rows="4"
+                    placeholder="Provide details about your leave..."
+                    value={form.remarks}
+                    onChange={(e) => setForm({ ...form, remarks: e.target.value })}
+                    required
+                    style={{ padding: "14px", paddingLeft: "44px" }}
+                  ></textarea>
+                </div>
+              </div>
+
+              <div style={{ marginTop: "32px", display: "flex", gap: "12px", justifyContent: "flex-end" }}>
+                <button type="button" className="btn btn-secondary" onClick={() => setIsSlideOverOpen(false)} disabled={submitting}>
+                  Cancel
+                </button>
+                <button type="submit" className="btn btn-primary" disabled={submitting}>
+                  {submitting ? "Submitting..." : "Submit Request"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

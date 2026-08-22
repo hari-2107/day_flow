@@ -97,60 +97,82 @@ export default function Attendance() {
             </div>
           )}
 
-          <div className="content-grid">
-            {}
-            <div className="card">
-              <div className="card-header">
-                <h3>Clock In / Clock Out</h3>
-              </div>
-              <div className="card-body">
-                <div className="attendance-card" style={{ padding: "20px", textAlign: "center" }}>
-                  <div className="attendance-date" style={{ fontSize: "14px", color: "#64748b", marginBottom: "8px" }}>{todayStr}</div>
-                  <div className="attendance-time" style={{ fontSize: "28px", fontWeight: "bold", color: "#1e293b", marginBottom: "16px" }}>
-                    {isCheckedIn ? todayRecord.check_in : "--:-- --"}
-                  </div>
-                  <div className="attendance-actions" style={{ display: "flex", justifyContent: "center", gap: "12px" }}>
-                    {!isCheckedIn ? (
-                      <button className="btn btn-primary" onClick={handleCheckIn} disabled={actionLoading}>
-                        {actionLoading ? "Checking In..." : "Check In"}
-                      </button>
-                    ) : !isCheckedOut ? (
-                      <button className="btn btn-danger" onClick={handleCheckOut} disabled={actionLoading} style={{ background: "#ef4444", color: "#fff" }}>
-                        {actionLoading ? "Checking Out..." : "Check Out"}
-                      </button>
-                    ) : (
-                      <div style={{ color: "#10b981", fontWeight: 600, display: "flex", alignItems: "center", gap: "6px" }}>
-                        <CheckSquare size={18} /> Shift Completed Today
-                      </div>
-                    )}
-                  </div>
+          {/* Horizontal Summary Strip */}
+          <div className="stats-grid" style={{ marginBottom: "24px" }}>
+            <div className="stat-card" style={{ padding: "16px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                <div className="stat-icon success" style={{ width: "40px", height: "40px" }}>
+                  <CheckCircle size={20} />
+                </div>
+                <div>
+                  <div style={{ color: "var(--text-muted)", fontSize: "12px", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.5px" }}>Present Days</div>
+                  <div style={{ fontSize: "20px", fontWeight: 800 }}>{logs.filter(l => l.status === "Present").length || 18}</div>
                 </div>
               </div>
             </div>
 
-            {}
-            <div className="card">
-              <div className="card-header">
-                <h3>Attendance Summary</h3>
+            <div className="stat-card" style={{ padding: "16px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                <div className="stat-icon info" style={{ width: "40px", height: "40px", background: "var(--accent-cyan-soft)", color: "var(--accent-cyan)" }}>
+                  <Clock size={20} />
+                </div>
+                <div>
+                  <div style={{ color: "var(--text-muted)", fontSize: "12px", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.5px" }}>Half Days</div>
+                  <div style={{ fontSize: "20px", fontWeight: 800 }}>{logs.filter(l => l.status === "Half-Day").length || 1}</div>
+                </div>
               </div>
-              <div className="card-body">
-                <div className="detail-grid">
-                  <div className="detail-item">
-                    <label>Present Days</label>
-                    <span>{logs.filter(l => l.status === "Present").length || 18} Days</span>
-                  </div>
-                  <div className="detail-item">
-                    <label>Half Days</label>
-                    <span>{logs.filter(l => l.status === "Half-Day").length || 1} Day</span>
-                  </div>
-                  <div className="detail-item">
-                    <label>Approved Leaves</label>
-                    <span>2 Days</span>
-                  </div>
-                  <div className="detail-item">
-                    <label>Unexcused Absent</label>
-                    <span>0 Days</span>
-                  </div>
+            </div>
+
+            <div className="stat-card" style={{ padding: "16px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                <div className="stat-icon warning" style={{ width: "40px", height: "40px" }}>
+                  <Calendar size={20} />
+                </div>
+                <div>
+                  <div style={{ color: "var(--text-muted)", fontSize: "12px", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.5px" }}>Approved Leaves</div>
+                  <div style={{ fontSize: "20px", fontWeight: 800 }}>2</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="stat-card" style={{ padding: "16px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                <div className="stat-icon danger" style={{ width: "40px", height: "40px" }}>
+                  <AlertCircle size={20} />
+                </div>
+                <div>
+                  <div style={{ color: "var(--text-muted)", fontSize: "12px", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.5px" }}>Unexcused Absent</div>
+                  <div style={{ fontSize: "20px", fontWeight: 800 }}>0</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Centered Clock In/Out Widget */}
+          <div className="card" style={{ maxWidth: "500px", margin: "0 auto 32px" }}>
+            <div className="card-header" style={{ textAlign: "center", justifyContent: "center" }}>
+              <h3>Daily Attendance Terminal</h3>
+            </div>
+            <div className="card-body">
+              <div className="attendance-card" style={{ padding: "32px 20px", textAlign: "center", background: "var(--surface-subtle)", borderRadius: "10px", border: "1px solid var(--border-card)" }}>
+                <div className="attendance-date" style={{ fontSize: "14px", color: "var(--text-subtle)", marginBottom: "8px", fontWeight: 500, textTransform: "uppercase", letterSpacing: "1px" }}>{todayStr}</div>
+                <div className="attendance-time" style={{ fontSize: "36px", fontWeight: "900", color: "var(--text-heading)", marginBottom: "24px", fontFamily: "var(--font-mono)" }}>
+                  {isCheckedIn ? todayRecord.check_in : "--:-- --"}
+                </div>
+                <div className="attendance-actions" style={{ display: "flex", justifyContent: "center", gap: "12px" }}>
+                  {!isCheckedIn ? (
+                    <button className="btn btn-primary btn-lg" onClick={handleCheckIn} disabled={actionLoading} style={{ minWidth: "200px" }}>
+                      {actionLoading ? "Checking In..." : "Check In"}
+                    </button>
+                  ) : !isCheckedOut ? (
+                    <button className="btn btn-danger btn-lg" onClick={handleCheckOut} disabled={actionLoading} style={{ background: "#ef4444", color: "#fff", minWidth: "200px" }}>
+                      {actionLoading ? "Checking Out..." : "Check Out"}
+                    </button>
+                  ) : (
+                    <div style={{ color: "#10b981", fontWeight: 600, display: "flex", alignItems: "center", gap: "6px" }}>
+                      <CheckSquare size={18} /> Shift Completed Today
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -178,32 +200,30 @@ export default function Attendance() {
                       </tr>
                     </thead>
                     <tbody>
-                      {logs.length > 0 ? (
+                      {logs.length === 0 ? (
+                        <tr>
+                          <td colSpan="6" style={{ textAlign: "center", padding: "48px 0", color: "var(--text-muted)" }}>
+                            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "12px" }}>
+                              <Clock size={32} opacity={0.5} />
+                              <span>No attendance recorded yet</span>
+                            </div>
+                          </td>
+                        </tr>
+                      ) : (
                         logs.map((log) => (
                           <tr key={log.id}>
-                            {isAdmin && (
-                              <td>
-                                <strong>{log.user_name || log.employee_id}</strong>
-                                <div style={{ fontSize: "12px", color: "#64748b" }}>{log.employee_id}</div>
-                              </td>
-                            )}
-                            <td>{log.date}</td>
-                            <td>{log.check_in || "--"}</td>
-                            <td>{log.check_out || "--"}</td>
-                            <td>{log.working_hours || "--"}</td>
+                            <td style={{ fontWeight: 600 }}>{log.date}</td>
+                            {isAdmin && <td>{log.user_name || "Unknown"}</td>}
+                            <td style={{ fontFamily: "var(--font-mono)" }}>{log.check_in || "--"}</td>
+                            <td style={{ fontFamily: "var(--font-mono)" }}>{log.check_out || "--"}</td>
+                            <td style={{ fontFamily: "var(--font-mono)" }}>{log.hours_worked || "--"}</td>
                             <td>
-                              <span className={`status ${log.status === "Present" ? "status-present" : "status-pending"}`}>
+                              <span className={`status-pill ${log.status === 'Present' ? 'status-approved' : (log.status === 'Absent' ? 'status-rejected' : 'status-pending')}`}>
                                 {log.status}
                               </span>
                             </td>
                           </tr>
                         ))
-                      ) : (
-                        <tr>
-                          <td colSpan={isAdmin ? 6 : 5} style={{ textAlign: "center", padding: "20px", color: "#64748b" }}>
-                            No attendance records logged yet.
-                          </td>
-                        </tr>
                       )}
                     </tbody>
                   </table>
