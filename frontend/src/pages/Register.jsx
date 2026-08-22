@@ -1,206 +1,121 @@
-import { useState } from "react";
+import React, { useState } from "react";
+import { Mail, Lock, Eye, EyeOff, User, Shield, ArrowRight } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import {
-  User,
-  Mail,
-  Lock,
-  Eye,
-  EyeOff,
-  ArrowRight,
-} from "lucide-react";
 
-function Register() {
-
-  const navigate = useNavigate();
-
-  const [showPassword, setShowPassword] = useState(false);
-
-  const [form, setForm] = useState({
-    name: "",
+export default function Register() {
+  const [formData, setFormData] = useState({
+    employeeId: "",
     email: "",
     password: "",
-    confirmPassword: "",
+    role: "Employee"
   });
+  const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = (e) => {
-
     e.preventDefault();
-
-    if (form.password !== form.confirmPassword) {
-      alert("Passwords do not match");
-      return;
-    }
-
-    console.log("Register:", form);
-
+    // Redirect to email verification per DayFlow authentication flow
     navigate("/verify-email");
   };
 
   return (
     <div className="auth-page">
-
       <div className="auth-container">
-
         <div className="auth-brand">
-
-          <div className="brand-icon">
-            D
-          </div>
-
-          <h1>
-            Day<span>Flow</span>
-          </h1>
-
-          <p>
-            Create your employee account.
-          </p>
-
+          <div className="auth-logo">DF</div>
+          <h1>Day<span>Flow</span></h1>
+          <p>Every workday, perfectly aligned.</p>
         </div>
 
         <div className="auth-card">
-
-          <div className="auth-header">
-
-            <h2>Create account</h2>
-
-            <p>
-              Join your organization on DayFlow
-            </p>
-
+          <div className="auth-card-header">
+            <h2>Create an Account</h2>
+            <p>Register using your official employee credentials</p>
           </div>
 
-          <form onSubmit={handleSubmit}>
-
-            <div className="input-group">
-
-              <label>Full Name</label>
-
+          <form className="auth-form" onSubmit={handleSubmit}>
+            <div className="form-group">
+              <label className="form-label required">Employee ID</label>
               <div className="input-wrapper">
-
-                <User size={19} />
-
+                <User className="input-icon" size={18} />
                 <input
-                  name="name"
-                  placeholder="Enter your full name"
-                  value={form.name}
+                  type="text"
+                  name="employeeId"
+                  placeholder="e.g. EMP-1042"
+                  value={formData.employeeId}
                   onChange={handleChange}
                   required
                 />
-
               </div>
-
             </div>
 
-            <div className="input-group">
-
-              <label>Email Address</label>
-
+            <div className="form-group">
+              <label className="form-label required">Official Email</label>
               <div className="input-wrapper">
-
-                <Mail size={19} />
-
+                <Mail className="input-icon" size={18} />
                 <input
                   type="email"
                   name="email"
-                  placeholder="Enter your email"
-                  value={form.email}
+                  placeholder="name@company.com"
+                  value={formData.email}
                   onChange={handleChange}
                   required
                 />
-
               </div>
-
             </div>
 
-            <div className="input-group">
-
-              <label>Password</label>
-
+            <div className="form-group">
+              <label className="form-label required">Role</label>
               <div className="input-wrapper">
+                <Shield className="input-icon" size={18} />
+                <select
+                  name="role"
+                  value={formData.role}
+                  onChange={handleChange}
+                >
+                  <option value="Employee">Employee</option>
+                  <option value="Admin">Admin / HR Officer</option>
+                </select>
+              </div>
+            </div>
 
-                <Lock size={19} />
-
+            <div className="form-group">
+              <label className="form-label required">Password</label>
+              <div className="input-wrapper">
+                <Lock className="input-icon" size={18} />
                 <input
                   type={showPassword ? "text" : "password"}
                   name="password"
-                  placeholder="Create password"
-                  value={form.password}
+                  placeholder="Create a secure password"
+                  value={formData.password}
                   onChange={handleChange}
                   required
                 />
-
                 <button
                   type="button"
-                  className="password-toggle"
-                  onClick={() =>
-                    setShowPassword(!showPassword)
-                  }
+                  className="input-action"
+                  onClick={() => setShowPassword(!showPassword)}
                 >
-                  {showPassword ? (
-                    <EyeOff size={19} />
-                  ) : (
-                    <Eye size={19} />
-                  )}
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
-
               </div>
-
             </div>
 
-            <div className="input-group">
-
-              <label>Confirm Password</label>
-
-              <div className="input-wrapper">
-
-                <Lock size={19} />
-
-                <input
-                  type="password"
-                  name="confirmPassword"
-                  placeholder="Confirm password"
-                  value={form.confirmPassword}
-                  onChange={handleChange}
-                  required
-                />
-
-              </div>
-
-            </div>
-
-            <button className="primary-button">
-
-              Create Account
-
+            <button type="submit" className="btn btn-primary btn-full btn-lg">
+              <span>Register</span>
               <ArrowRight size={18} />
-
             </button>
-
           </form>
 
-          <p className="auth-switch">
-
-            Already have an account?
-
-            <Link to="/login">
-              Sign in
-            </Link>
-
-          </p>
-
+          <div className="auth-footer">
+            Already have an account? <Link to="/login">Sign In</Link>
+          </div>
         </div>
-
       </div>
-
     </div>
   );
 }
-
-export default Register;

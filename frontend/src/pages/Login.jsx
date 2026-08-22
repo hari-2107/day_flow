@@ -1,11 +1,17 @@
 import React, { useState } from "react";
-import { Mail, Lock, Eye, EyeOff, ArrowRight } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, ArrowRight, Shield } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 export default function Login() {
-  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+    role: "Employee"
+  });
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -13,8 +19,21 @@ export default function Login() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Temporary redirect simulation based on input or default
-    navigate("/dashboard");
+
+    const isAdmin = formData.role === "Admin" || formData.email.toLowerCase().includes("admin");
+
+    login({
+      email: formData.email,
+      role: isAdmin ? "Admin" : "Employee",
+      name: isAdmin ? "HR Admin" : "Alex Morgan",
+      employeeId: isAdmin ? "EMP-ADMIN-01" : "EMP-1042"
+    });
+
+    if (isAdmin) {
+      navigate("/admin/dashboard");
+    } else {
+      navigate("/employee/dashboard");
+    }
   };
 
   return (
@@ -33,6 +52,22 @@ export default function Login() {
           </div>
 
           <form className="auth-form" onSubmit={handleSubmit}>
+            <div className="form-group">
+              <label className="form-label required">Role</label>
+              <div className="input-wrapper">
+                <Shield className="input-icon" size={18} />
+                <select
+                  name="role"
+                  value={formData.role}
+                  onChange={handleChange}
+                  style={{ height: "62px", paddingLeft: "54px", fontSize: "16px" }}
+                >
+                  <option value="Employee">Employee</option>
+                  <option value="Admin">Admin / HR Officer</option>
+                </select>
+              </div>
+            </div>
+
             <div className="form-group">
               <label className="form-label required">Email Address</label>
               <div className="input-wrapper">
